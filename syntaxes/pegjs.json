@@ -28,9 +28,17 @@
     ],
     "repository": {
         "comment": {
-            "begin": "/\\*",
-            "end": "\\*/",
-            "name": "comment.block.comment.pegjs"
+            "patterns": [
+                {
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "name": "comment.block.pegjs"
+                },
+                {
+                    "match": "//.*$\\n?",
+                    "name": "comment.line.double-slash.pegjs"
+                }
+            ]
         },
         "label": {
             "match": "(\\w+)\\s*(?=:)",
