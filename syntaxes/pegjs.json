@@ -1,0 +1,82 @@
+{
+    "fileTypes": [
+        "pegjs"
+    ],
+    "name": "PEG.js File",
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#label"
+        },
+        {
+            "include": "#rule"
+        },
+        {
+            "include": "#literal"
+        },
+        {
+            "include": "#charclass"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#inlinejs"
+        }
+    ],
+    "repository": {
+        "comment": {
+            "begin": "/\\*",
+            "end": "\\*/",
+            "name": "comment.block.comment.pegjs"
+        },
+        "label": {
+            "match": "(\\w+)\\s*(?=:)",
+            "captures": {
+                "1": {
+                    "name": "entity.other.attribute-name.attribute.pegjs"
+                }
+            }
+        },
+        "rule": {
+            "match": "[a-zA-Z_][a-zA-Z_0-9]*",
+            "name": "entity.name.type.pegjs"
+        },
+        "literal": {
+            "patterns": [
+                {
+                    "begin": "\"",
+                    "end": "\"",
+                    "name": "string.quoted.double.pegjs"
+                },
+                {
+                    "begin": "'",
+                    "end": "'",
+                    "name": "string.quoted.single.pegjs"
+                }
+            ]
+        },
+        "charclass": {
+            "begin": "\\[",
+            "end": "\\]",
+            "name": ""
+        },
+        "operators": {
+            "match": "[*?/.$!=+&]",
+            "name": "keyword.operator.pegjs"
+        },
+        "inlinejs": {
+            "begin": "{",
+            "end": "}",
+            "name": "source.js.embedded.pegjs",
+            "patterns": [
+                {
+                    "include": "source.js"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.pegjs"
+}
