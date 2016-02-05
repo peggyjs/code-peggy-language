@@ -52,7 +52,7 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm install && node ./node_modules/vscode/bin/compile",
+        "vscode:prepublish": "cd server && npm run prepare_publish && cd .. && npm install && node ./node_modules/vscode/bin/compile",
         "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
     },
     "devDependencies": {

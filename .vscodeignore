@@ -1,0 +1,10 @@
+.vscode/**
+typings/**
+out/test/**
+test/**
+src/**
+images/*.svg
+**/*.map
+.gitignore
+tsconfig.json
+server/**
