@@ -11,6 +11,9 @@
             "include": "#label"
         },
         {
+            "include": "#defRule"
+        },
+        {
             "include": "#rule"
         },
         {
@@ -70,6 +73,14 @@
             "begin": "\\[",
             "end": "\\]",
             "name": "declaration.keyword.pegjs"
+        },
+        "defRule": {
+            "match": "(\\w+)\\s*(?=\\=)",
+            "captures": {
+                "1": {
+                    "name": "entity.name.function.pegjs"
+                }
+            }
         },
         "operators": {
             "match": "[*?/.$!=+&]",
