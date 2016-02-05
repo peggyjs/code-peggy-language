@@ -3,7 +3,8 @@
 import {
     createConnection, IConnection,
     TextDocuments, ITextDocument, Diagnostic,
-    InitializeParams, InitializeResult, DiagnosticSeverity
+    InitializeParams, InitializeResult, DiagnosticSeverity,
+    Range
 } from 'vscode-languageserver';
 
 import * as pegjs from 'pegjs';
@@ -32,20 +33,30 @@ connection.onInitialize((params): InitializeResult => {
     }
 });
 
+function pegjsLoc_to_vscodeRange(loc:any): Range {
+    return {
+        start: {
+            line: loc.start.line - 1,
+            character: loc.start.column - 1
+        },
+        end: {
+            line: loc.end.line - 1,
+            character: loc.end.column - 1
+        }
+    };
+}
+
 documents.onDidChangeContent((change) => {
     let diagnostics: Diagnostic[] = [];
     
     try {
         let result = pegjs.buildParser(change.document.getText());
-    } catch(message)
+    } catch(error)
     {
         diagnostics.push({
             severity: DiagnosticSeverity.Error,
-            range: {
-                start: { line: 1, character: 1},
-                end: { line: 1, character: 1 + 10 }
-            },
-            message: message.meassage
+            range: pegjsLoc_to_vscodeRange(error.location),
+            message: error.name + ": " + error.message
         });
     }
     
