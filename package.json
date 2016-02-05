@@ -4,6 +4,10 @@
     "description": "Syntax highlighting for PEG.js in Visual Studio Code.",
     "version": "0.0.1",
     "publisher": "SirTobi",
+    "author": {
+        "name": "Tobias Kahlert (a.k.a SirTobi)"
+    },
+    "homepage": "https://github.com/SrTobi/code-pegjs-language",
     "engines": {
         "vscode": "^0.10.1"
     },
