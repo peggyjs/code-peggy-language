@@ -18,6 +18,10 @@
         "type": "git",
         "url": "https://github.com/SrTobi/code-pegjs-language"
     },
+    "activationEvents": [
+        "onLanguage:pegjs"
+    ],
+    "main": "out/main",
     "contributes": {
         "languages": [
             {
@@ -46,5 +50,18 @@
                 "path": "./snippets/snippets.json"
             }
         ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm install && node ./node_modules/vscode/bin/compile",
+        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
+    },
+    "devDependencies": {
+        "typescript": "^1.7.5",
+        "vscode": "0.10.x"
+    },
+    "dependencies": {
+        "vscode-languageclient": "0.10.x",
+        "vscode-languageserver": "0.10.x",
+        "pegjs": "^0.9.0"
     }
 }
