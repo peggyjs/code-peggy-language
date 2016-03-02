@@ -7,7 +7,7 @@
 		"node": "*"
 	},
 	"scripts": {
-        "prepare_publish": "npm run compile || true",
+        "prepare_publish": "npm install && npm run compile || true",
 		"compile": "installServerIntoExtension ../out ./package.json ./tsconfig.json && tsc -p .",
 		"watch": "installServerIntoExtension ../out ./package.json ./tsconfig.json && tsc --watch -p ."
 	},
