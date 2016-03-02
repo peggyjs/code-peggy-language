@@ -7,7 +7,7 @@ import {
     Range
 } from 'vscode-languageserver';
 
-var pegjs = require('pegjs');
+import * as pegjs from 'pegjs';
 
 // Create a connection for the server. The connection uses 
 // stdin / stdout for message passing
@@ -33,7 +33,7 @@ connection.onInitialize((params): InitializeResult => {
     }
 });
 
-function pegjsLoc_to_vscodeRange(loc:any): Range {
+function pegjsLoc_to_vscodeRange(loc: pegjs.LocationRange): Range {
     return {
         start: {
             line: loc.start.line - 1,
@@ -53,9 +53,10 @@ documents.onDidChangeContent((change) => {
         let result = pegjs.buildParser(change.document.getText());
     } catch(error)
     {
+        let err : pegjs.PegjsError = error;
         diagnostics.push({
             severity: DiagnosticSeverity.Error,
-            range: pegjsLoc_to_vscodeRange(error.location),
+            range: pegjsLoc_to_vscodeRange(err.location),
             message: error.name + ": " + error.message
         });
     }
