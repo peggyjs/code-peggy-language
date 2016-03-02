@@ -7,7 +7,7 @@ import {
     Range
 } from 'vscode-languageserver';
 
-import * as pegjs from 'pegjs';
+var pegjs = require('pegjs');
 
 // Create a connection for the server. The connection uses 
 // stdin / stdout for message passing
