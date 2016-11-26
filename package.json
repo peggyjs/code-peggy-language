@@ -2,7 +2,7 @@
     "name": "pegjs-language",
     "displayName": "PEG.js Language",
     "description": "Syntax highlighting for PEG.js in Visual Studio Code.",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "SirTobi",
     "author": {
         "name": "Tobias Kahlert (a.k.a SirTobi)"
@@ -11,13 +11,13 @@
     "engines": {
         "vscode": "^0.10.1"
     },
-	"categories": [
+    "categories": [
         "Languages",
         "Snippets"
-	],
+    ],
     "icon": "images/icon.png",
     "bugs": {
-        "url": "https://github.com/SrTobi/code-pegjs-language/issues"  
+        "url": "https://github.com/SrTobi/code-pegjs-language/issues"
     },
     "repository": {
         "type": "git",
