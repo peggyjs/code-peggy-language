@@ -82,7 +82,7 @@
                             "name": "constant.character.escape.pegjs"
                         },
                         {
-                            "match": "[^\"]*[^\\n\\r\"\\\\]$",
+                            "match": "[^']*[^\\n\\r'\\\\]$",
                             "name": "invalid.illegal.string.pegjs"
                         }
                     ]
