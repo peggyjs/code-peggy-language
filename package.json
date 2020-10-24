@@ -3,6 +3,7 @@
     "displayName": "PEG.js Language",
     "description": "Syntax highlighting and error reporting for PEG.js",
     "version": "1.0.0",
+    "license": "MIT",
     "publisher": "SirTobi",
     "author": {
         "name": "Tobias Kahlert",
@@ -61,7 +62,7 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "rm -rf ./node_modules ./out ./server/our  && npm install && npm run compile",
+        "vscode:prepublish": "rm -r ./node_modules ./out ./server/out ./server/tsconfig.tsbuildinfo  && npm install && npm run compile && npm prune --production",
         "compile": "tsc -b",
         "watch": "tsc -b -w"
     },
