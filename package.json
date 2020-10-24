@@ -2,7 +2,7 @@
     "name": "pegjs-language",
     "displayName": "PEG.js Language",
     "description": "Syntax highlighting and error reporting for PEG.js",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "publisher": "SirTobi",
     "author": {
         "name": "Tobias Kahlert",
