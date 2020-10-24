@@ -5,8 +5,6 @@ import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient';
 
-console.log("test")
-
 export function activate(context: ExtensionContext) {
 
     // The server is implemented in node
@@ -24,7 +22,7 @@ export function activate(context: ExtensionContext) {
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: 'pegjs' }],
+		documentSelector: [{ language: 'pegjs' }],
         synchronize: {
             // Notify the server about file changes to '.clientrc files condisposabletain in the workspace
             fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
