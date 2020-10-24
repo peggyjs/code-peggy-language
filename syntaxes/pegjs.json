@@ -109,7 +109,7 @@
         "inlinejs": {
             "begin": "{",
             "end": "}",
-            "name": "source.js.embedded.pegjs",
+            "name": "meta.embedded.block.javascript",
             "patterns": [
                 {
                     "include": "source.js"

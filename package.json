@@ -47,7 +47,10 @@
             {
                 "language": "pegjs",
                 "scopeName": "source.pegjs",
-                "path": "./syntaxes/pegjs.json"
+                "path": "./syntaxes/pegjs.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.javascript": "javascript"
+                }
             }
         ],
         "snippets": [
