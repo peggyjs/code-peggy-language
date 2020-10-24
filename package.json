@@ -5,12 +5,12 @@
     "version": "0.1.0",
     "publisher": "SirTobi",
     "author": {
-      "name": "Tobias Kahlert",
-      "email": "code.databyte@gmail.com"
+        "name": "Tobias Kahlert",
+        "email": "code.databyte@gmail.com"
     },
     "homepage": "https://github.com/SrTobi/code-pegjs-language",
     "engines": {
-        "vscode": "^1.22.0"
+        "vscode": "^1.50.0"
     },
     "categories": [
         "Programming Languages",
@@ -61,16 +61,19 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "cd server && npm run prepare_publish && cd .. && npm install && npm run compile",
+        "vscode:prepublish": "rm -rf ./node_modules ./out ./server/our  && npm install && npm run compile",
         "compile": "tsc -b",
         "watch": "tsc -b -w"
     },
     "devDependencies": {
         "typescript": "^4.0.3",
+        "@types/pegjs": "^0.10.2",
         "@types/vscode": "^1.50.0",
         "@types/node": "12.12.2"
     },
     "dependencies": {
+        "vscode-languageserver": "^6.1.1",
+        "vscode-languageserver-textdocument": "^1.0.1",
         "vscode-languageclient": "^6.1.3"
     }
 }

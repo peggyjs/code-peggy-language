@@ -1,10 +1,10 @@
 .vscode/**
-typings/**
-out/test/**
-test/**
-src/**
 images/*.svg
-**/*.map
 .gitignore
-tsconfig.json
-server/**
+
+**/out/test/**
+**/test/**
+**/src/**
+**/*.map
+**/tsconfig.json
+**/tsconfig.tsbuildinfo
