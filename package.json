@@ -72,6 +72,7 @@
         "@types/node": "12.12.2"
     },
     "dependencies": {
+        "pegjs": "^0.10.0",
         "vscode-languageserver": "^6.1.1",
         "vscode-languageserver-textdocument": "^1.0.1",
         "vscode-languageclient": "^6.1.3"
