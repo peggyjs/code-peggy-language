@@ -1,39 +1,46 @@
 'use strict';
 
+import * as PEG from 'pegjs';
 import {
-    createConnection, IConnection,
-    TextDocuments, ITextDocument, Diagnostic,
-    InitializeParams, InitializeResult, DiagnosticSeverity,
-    Range
-} from 'vscode-languageserver';
+    createConnection,
+    Diagnostic,
 
-import * as pegjs from 'pegjs';
+    DiagnosticSeverity, IConnection,
+
+    InitializeResult,
+    ProposedFeatures,
+    Range, TextDocuments,
+    TextDocumentSyncKind
+} from 'vscode-languageserver';
+import {
+    TextDocument
+} from 'vscode-languageserver-textdocument';
+
+
 
 // Create a connection for the server. The connection uses 
 // stdin / stdout for message passing
-let connection: IConnection = createConnection(process.stdin, process.stdout);
+let connection: IConnection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager. The text document manager
 // supports full document sync only
-let documents: TextDocuments = new TextDocuments();
+let documents = new TextDocuments(TextDocument);
 // Make the text document manager listen on the connection
 // for open, change and close text document events
 documents.listen(connection);
 
 // After the server has started the client sends an initilize request. The server receives
 // in the passed params the rootPath of the workspace plus the client capabilites. 
-let workspaceRoot: string;
-connection.onInitialize((params): InitializeResult => {
-    workspaceRoot = params.rootPath;
+connection.onInitialize((): InitializeResult => {
     return {
         capabilities: {
             // Tell the client that the server works in FULL text document sync mode
-            textDocumentSync: documents.syncKind
+            textDocumentSync: TextDocumentSyncKind.Incremental
         }
     }
 });
 
-function pegjsLoc_to_vscodeRange(loc: pegjs.LocationRange): Range {
+function pegjsLoc_to_vscodeRange(loc: PEG.LocationRange): Range {
     return {
         start: {
             line: loc.start.line - 1,
@@ -50,14 +57,14 @@ documents.onDidChangeContent((change) => {
     let diagnostics: Diagnostic[] = [];
     
     try {
-        let result = pegjs.buildParser(change.document.getText());
+        PEG.generate(change.document.getText())
     } catch(error)
     {
-        let err : pegjs.PegjsError = error;
+        let err = error as PEG.GrammarError;
         diagnostics.push({
             severity: DiagnosticSeverity.Error,
             range: pegjsLoc_to_vscodeRange(err.location),
-            message: error.name + ": " + error.message
+            message: err.name + ": " + err.message
         });
     }
     

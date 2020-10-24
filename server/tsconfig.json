@@ -1,12 +1,18 @@
 {
 	"compilerOptions": {
-		"target": "es6",
 		"module": "commonjs",
+		"target": "es2019",
+		"lib": ["ES2019"],
 		"moduleResolution": "node",
+
+		"composite": true,
+
 		"sourceMap": true,
-		"outDir": "../out/server"
+		"noImplicitAny": true,
+		"rootDir": "src",
+		"outDir": "out"
 	},
-	"exclude": [
-		"node_modules"
+	"include": [
+		"src"
 	]
 }
