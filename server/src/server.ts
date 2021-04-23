@@ -1,6 +1,6 @@
 'use strict';
 
-import * as PEG from 'pegjs';
+import * as PEG from 'peggy';
 import {
     createConnection,
     Diagnostic,

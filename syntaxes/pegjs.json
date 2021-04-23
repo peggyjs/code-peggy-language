@@ -103,7 +103,7 @@
             }
         },
         "operators": {
-            "match": "[*?/.$!=+&]",
+            "match": "[*?/.$!=+&@]",
             "name": "keyword.operator.pegjs"
         },
         "inlinejs": {
