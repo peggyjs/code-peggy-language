@@ -9,3 +9,4 @@ images/*.svg
 **/*.map
 **/tsconfig.json
 **/tsconfig.tsbuildinfo
+**/*.vsix

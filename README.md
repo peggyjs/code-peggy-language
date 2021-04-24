@@ -1,7 +1,9 @@
-PEG.js Language Support
-=======================
+# NOT RELEASED YET
 
-Syntax highlighting and error reporting for [PEG.js](http://pegjs.org) in Visual Studio Code.
+Peggy Language Support
+======================
+
+Syntax highlighting and error reporting for [Peggy](http://peggyjs.org) in Visual Studio Code.
 
 ## Syntax Highlighting
 
@@ -15,5 +17,5 @@ Errors in the grammar are highlighted. Unfortunately only one error at a time is
 
 ## Contributing
 
-Feel free to contribute to this extension [here](https://github.com/SrTobi/code-pegjs-language).
+Feel free to contribute to this extension [here](https://github.com/peggyjs/code-peggy-language).
 Please read the [CONTRIBUTING.md](/CONTRIBUTING.md).

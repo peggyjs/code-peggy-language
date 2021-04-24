@@ -1,17 +1,17 @@
 {
-    "name": "pegjs-language",
-    "displayName": "PEG.js Language",
-    "description": "Syntax highlighting and error reporting for PEG.js",
+    "name": "peggy-language",
+    "displayName": "Peggy Language",
+    "description": "Syntax highlighting and error reporting for Peggy",
     "version": "1.0.3",
     "license": "MIT",
-    "publisher": "SirTobi",
+    "publisher": "PeggyJS",
     "author": {
         "name": "Tobias Kahlert",
         "email": "code.databyte@gmail.com"
     },
-    "homepage": "https://github.com/SrTobi/code-pegjs-language",
+    "homepage": "https://github.com/peggyjs/code-peggy-language",
     "engines": {
-        "vscode": "^1.50.0"
+        "vscode": "^1.55.0"
     },
     "categories": [
         "Programming Languages",
@@ -19,39 +19,39 @@
     ],
     "icon": "images/icon.png",
     "bugs": {
-        "url": "https://github.com/SrTobi/code-pegjs-language/issues"
+        "url": "https://github.com/peggyjs/code-peggy-language/issues"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/SrTobi/code-pegjs-language"
+        "url": "https://github.com/peggyjs/code-peggy-language"
     },
     "activationEvents": [
-        "onLanguage:pegjs"
+        "onLanguage:peggy"
     ],
     "main": "./out/main",
     "contributes": {
         "languages": [
             {
-                "id": "pegjs",
+                "id": "peggy",
                 "aliases": [
+                    "Peggy",
+                    "peggy",
                     "PEG.js",
                     "pegjs",
-                    "peg.js",
-                    "Peggy",
-                    "peggy"
+                    "peg.js"
                 ],
                 "extensions": [
-                    ".pegjs",
-                    ".peggy"
+                    ".peggy",
+                    ".pegjs"
                 ],
-                "configuration": "./pegjs.configuration.json"
+                "configuration": "./peggy.configuration.json"
             }
         ],
         "grammars": [
             {
-                "language": "pegjs",
-                "scopeName": "source.pegjs",
-                "path": "./syntaxes/pegjs.json",
+                "language": "peggy",
+                "scopeName": "source.peggy",
+                "path": "./syntaxes/peggy.json",
                 "embeddedLanguages": {
                     "meta.embedded.block.javascript": "javascript"
                 }
@@ -59,7 +59,7 @@
         ],
         "snippets": [
             {
-                "language": "pegjs",
+                "language": "peggy",
                 "path": "./snippets/snippets.json"
             }
         ]
@@ -70,14 +70,14 @@
         "watch": "tsc -b -w"
     },
     "devDependencies": {
-        "@types/node": "12.12.2",
-        "@types/vscode": "^1.50.0",
-        "typescript": "^4.0.3"
+        "@types/node": "14.14.41",
+        "@types/vscode": "^1.55.0",
+        "typescript": "^4.2.4"
     },
     "dependencies": {
         "peggy": "^1.1.0",
-        "vscode-languageclient": "^6.1.3",
-        "vscode-languageserver": "^6.1.1",
+        "vscode-languageclient": "^7.0.0",
+        "vscode-languageserver": "^7.0.0",
         "vscode-languageserver-textdocument": "^1.0.1"
     }
 }

@@ -1,26 +1,25 @@
 'use strict';
 
-import * as PEG from 'peggy';
+import * as peggy from 'peggy';
 import {
     createConnection,
     Diagnostic,
 
-    DiagnosticSeverity, IConnection,
+    DiagnosticSeverity, Connection,
 
     InitializeResult,
     ProposedFeatures,
     Range, TextDocuments,
-    TextDocumentSyncKind
-} from 'vscode-languageserver';
+    TextDocumentSyncKind,
+    WatchDog, InitializeParams
+} from 'vscode-languageserver/node';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 
-
-
-// Create a connection for the server. The connection uses 
+// Create a connection for the server. The connection uses
 // stdin / stdout for message passing
-let connection: IConnection = createConnection(ProposedFeatures.all);
+let connection: Connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager. The text document manager
 // supports full document sync only
@@ -30,7 +29,7 @@ let documents = new TextDocuments(TextDocument);
 documents.listen(connection);
 
 // After the server has started the client sends an initilize request. The server receives
-// in the passed params the rootPath of the workspace plus the client capabilites. 
+// in the passed params the rootPath of the workspace plus the client capabilites.
 connection.onInitialize((): InitializeResult => {
     return {
         capabilities: {
@@ -40,7 +39,7 @@ connection.onInitialize((): InitializeResult => {
     }
 });
 
-function pegjsLoc_to_vscodeRange(loc: PEG.LocationRange): Range {
+function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
     return {
         start: {
             line: loc.start.line - 1,
@@ -57,13 +56,13 @@ documents.onDidChangeContent((change) => {
     let diagnostics: Diagnostic[] = [];
     
     try {
-        PEG.generate(change.document.getText())
+        peggy.generate(change.document.getText())
     } catch(error)
     {
-        let err = error as PEG.GrammarError;
+        let err = error as peggy.GrammarError;
         diagnostics.push({
             severity: DiagnosticSeverity.Error,
-            range: pegjsLoc_to_vscodeRange(err.location),
+            range: peggyLoc_to_vscodeRange(err.location),
             message: err.name + ": " + err.message
         });
     }
