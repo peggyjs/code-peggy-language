@@ -2,7 +2,7 @@
     "name": "peggy-language",
     "displayName": "Peggy Language",
     "description": "Syntax highlighting and error reporting for Peggy",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "license": "MIT",
     "publisher": "PeggyJS",
     "author": {
