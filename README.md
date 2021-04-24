@@ -21,3 +21,7 @@ Errors in the grammar are highlighted. Unfortunately only one error at a time is
 
 Feel free to contribute to this extension [here](https://github.com/peggyjs/code-peggy-language).
 Please read the [CONTRIBUTING.md](/CONTRIBUTING.md).
+
+## Origins
+
+Based on [code-pegjs-language](https://github.com/SrTobi/code-pegjs-language) by [Tobias Kahlert](https://github.com/SrTobi)
