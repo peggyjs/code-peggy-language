@@ -4,7 +4,7 @@
     "description": "Syntax highlighting and error reporting for Peggy",
     "version": "1.0.3",
     "license": "MIT",
-    "publisher": "hildjj",
+    "publisher": "PeggyJS",
     "author": {
         "name": "Tobias Kahlert",
         "email": "code.databyte@gmail.com"
