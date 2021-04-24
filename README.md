@@ -1,9 +1,11 @@
-# NOT RELEASED YET
-
 Peggy Language Support
 ======================
 
 Syntax highlighting and error reporting for [Peggy](http://peggyjs.org) in Visual Studio Code.
+
+## Install
+
+See the [Marketplace](https://marketplace.visualstudio.com/items?itemName=PeggyJS.peggy-language).
 
 ## Syntax Highlighting
 
