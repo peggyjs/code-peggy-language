@@ -66,11 +66,13 @@
   },
   "scripts": {
     "lint": "eslint . --ext ts --ext js",
-    "clean": "rm -r ./node_modules ./out ./server/out ./server/tsconfig.tsbuildinfo",
-    "vscode:prepublish": "npm run clean && npm install && npm run compile && npm prune --production",
+    "clean": "rimraf ./out ./server/out ./server/tsconfig.tsbuildinfo",
+    "vscode:prepublish": "npm run webpack",
+    "webpack": "npm run clean && webpack --mode production",
+    "webpack:dev": "npm run clean && webpack --mode none",
     "precompile": "npm run lint",
-    "compile": "tsc -b",
-    "watch": "tsc -b -w"
+    "compile": "npm webpack",
+    "watch": "webpack watch --mode development"
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "0.0.1",
@@ -78,7 +80,11 @@
     "@types/vscode": "^1.55.0",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
-    "typescript": "^4.2.4"
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.1.1",
+    "typescript": "^4.2.4",
+    "webpack": "^5.35.1",
+    "webpack-cli": "^4.6.0"
   },
   "dependencies": {
     "peggy": "^1.1.0",

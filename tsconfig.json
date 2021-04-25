@@ -1,20 +1,15 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2019",
-		"lib": ["ES2019"],
-		
-		"sourceMap": true,
-		"incremental": false,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2019",
+    "lib": ["ES2019"],
 
-		"noImplicitAny": true,
-		"rootDir": "src",
-		"outDir": "out"
-	},
-	"include": [
-		"src"
-	],
-	"references": [
-		{ "path": "./server" }
-	]
+    "sourceMap": true,
+    "incremental": false,
+
+    "noImplicitAny": true
+  },
+  "include": [
+    "src"
+  ]
 }
