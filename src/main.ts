@@ -37,7 +37,7 @@ export function activate(context: ExtensionContext) {
 
   // Create the language client and start the client.
   const server = new LanguageClient(
-    "Language Server PEG.js",
+    "Language Server Peggy",
     serverOptions,
     clientOptions
   );
