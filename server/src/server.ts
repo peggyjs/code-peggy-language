@@ -63,7 +63,7 @@ connection.onCompletion(
     const words = document.getText({
       start: pos.position,
       end: endPos
-    }).split(/\s+/gm);
+    }).split(/\P{L}/gmu);  // example "|rule" => ["", "rule"]
     const word = words[words.length - 1];
     if (word === "") {
       return null;
