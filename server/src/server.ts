@@ -11,9 +11,12 @@ import {
   LocationLink,
   ProposedFeatures,
   Range,
+  RenameParams,
   TextDocumentPositionParams,
   TextDocumentSyncKind,
   TextDocuments,
+  TextEdit,
+  WorkspaceEdit,
   createConnection
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
@@ -46,7 +49,8 @@ connection.onInitialize((): InitializeResult => {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       completionProvider: {},
       definitionProvider: true,
-      referencesProvider: true
+      referencesProvider: true,
+      renameProvider: true
     }
   };
 });
@@ -152,6 +156,54 @@ connection.onReferences((pos: TextDocumentPositionParams) : Location[] => {
   visit(docAST);
 
   return results;
+});
+
+connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
+  const docAST = AST[pos.textDocument.uri];
+  if (!docAST || (docAST.rules.length === 0)) {
+    return null;
+  }
+  const document = documents.get(pos.textDocument.uri);
+  if (!document) {
+    return null;
+  }
+  const word = getWordAtPosition(document, pos.position);
+  if (word === "") {
+    return null;
+  }
+
+  const edits:TextEdit[] = [];
+  const visit = peggy_unsafe.compiler.visitor.build({
+    rule_ref(node:any): void {
+      if (node.name !== word) { return; }
+      edits.push({
+        newText: pos.newName,
+        range: peggyLoc_to_vscodeRange(node.location)
+      });
+    },
+
+    rule(node:any): void {
+      visit(node.expression);
+      if (node.name !== word) { return; }
+      const range = peggyLoc_to_vscodeRange(node.location);
+      range.end = {
+        line: range.start.line,
+        character: range.start.character + node.name.length
+      };
+
+      edits.push({
+        newText: pos.newName,
+        range
+      });
+    },
+  });
+  visit(docAST);
+
+  return {
+    changes: {
+      [pos.textDocument.uri]: edits
+    }
+  };
 });
 
 documents.onDidClose((change) => {
