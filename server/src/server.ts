@@ -6,12 +6,15 @@ import {
   Connection,
   Diagnostic,
   DiagnosticSeverity,
+  DocumentSymbol,
+  DocumentSymbolParams,
   InitializeResult,
   Location,
   LocationLink,
   ProposedFeatures,
   Range,
   RenameParams,
+  SymbolKind,
   TextDocumentPositionParams,
   TextDocumentSyncKind,
   TextDocuments,
@@ -49,6 +52,9 @@ connection.onInitialize((): InitializeResult => {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       completionProvider: {},
       definitionProvider: true,
+      documentSymbolProvider: {
+        label: "Peggy Rules"
+      },
       referencesProvider: true,
       renameProvider: true
     }
@@ -74,6 +80,16 @@ function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
   return {
     start: { line: loc.start.line - 1, character: loc.start.column - 1 },
     end: { line: loc.end.line - 1, character: loc.end.column - 1 }
+  };
+}
+
+function ruleNameRange(name:string, ruleRange:Range): Range {
+  return {
+    start: ruleRange.start,
+    end: {
+      line: ruleRange.start.line,
+      character: ruleRange.start.character + name.length
+    }
   };
 }
 
@@ -112,20 +128,17 @@ connection.onDefinition((pos: TextDocumentPositionParams) : LocationLink[] => {
   }
 
   const rule = docAST.rules.find((r:any) => r.name === word);
-  const ruleRange = peggyLoc_to_vscodeRange(rule.location);
-  const ruleNameRange = {
-    start: ruleRange.start,
-    end: {
-      line: ruleRange.start.line,
-      character: ruleRange.start.character + rule.name.length
-    }
-  };
+  if (!rule) {
+    return null;
+  }
+  const targetRange = peggyLoc_to_vscodeRange(rule.location);
+  const targetSelectionRange = ruleNameRange(rule.name, targetRange);
 
   return [
     {
       targetUri: pos.textDocument.uri,
-      targetRange: ruleRange,
-      targetSelectionRange: ruleNameRange
+      targetRange,
+      targetSelectionRange
     }
   ];
 });
@@ -185,15 +198,9 @@ connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
     rule(node:any): void {
       visit(node.expression);
       if (node.name !== word) { return; }
-      const range = peggyLoc_to_vscodeRange(node.location);
-      range.end = {
-        line: range.start.line,
-        character: range.start.character + node.name.length
-      };
-
       edits.push({
         newText: pos.newName,
-        range
+        range: ruleNameRange(node.name, peggyLoc_to_vscodeRange(node.location))
       });
     },
   });
@@ -204,6 +211,28 @@ connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
       [pos.textDocument.uri]: edits
     }
   };
+});
+
+connection.onDocumentSymbol((pos: DocumentSymbolParams) : DocumentSymbol[] => {
+  const docAST = AST[pos.textDocument.uri];
+  if (!docAST || (docAST.rules.length === 0)) {
+    return null;
+  }
+
+  return docAST.rules.map((r:any) => {
+    const range = peggyLoc_to_vscodeRange(r.location);
+    const ret:DocumentSymbol = {
+      name: r.name,
+      kind: SymbolKind.Function,
+      range,
+      selectionRange: ruleNameRange(r.name, range)
+    };
+    if (r.expression.type === "named") {
+      ret.detail = r.expression.name;
+    }
+
+    return ret;
+  });
 });
 
 documents.onDidClose((change) => {
