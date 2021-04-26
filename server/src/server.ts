@@ -7,6 +7,7 @@ import {
   Diagnostic,
   DiagnosticSeverity,
   InitializeResult,
+  Location,
   LocationLink,
   ProposedFeatures,
   Range,
@@ -44,7 +45,8 @@ connection.onInitialize((): InitializeResult => {
       // Tell the client that the server works in FULL text document sync mode
       textDocumentSync: TextDocumentSyncKind.Incremental,
       completionProvider: {},
-      definitionProvider: true
+      definitionProvider: true,
+      referencesProvider: true
     }
   };
 });
@@ -122,6 +124,34 @@ connection.onDefinition((pos: TextDocumentPositionParams) : LocationLink[] => {
       targetSelectionRange: ruleNameRange
     }
   ];
+});
+
+connection.onReferences((pos: TextDocumentPositionParams) : Location[] => {
+  const docAST = AST[pos.textDocument.uri];
+  if (!docAST || (docAST.rules.length === 0)) {
+    return null;
+  }
+  const document = documents.get(pos.textDocument.uri);
+  if (!document) {
+    return null;
+  }
+  const word = getWordAtPosition(document, pos.position);
+  if (word === "") {
+    return null;
+  }
+  const results:Location[] = [];
+  const visit = peggy_unsafe.compiler.visitor.build({
+    rule_ref(node:any): void {
+      if (node.name !== word) { return; }
+      results.push({
+        uri: pos.textDocument.uri,
+        range: peggyLoc_to_vscodeRange(node.location)
+      });
+    }
+  });
+  visit(docAST);
+
+  return results;
 });
 
 documents.onDidClose((change) => {
