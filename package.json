@@ -71,7 +71,7 @@
     "webpack": "npm run clean && webpack --mode production",
     "webpack:dev": "npm run clean && webpack --mode none",
     "precompile": "npm run lint",
-    "compile": "npm webpack",
+    "compile": "npm run webpack",
     "watch": "webpack watch --mode development"
   },
   "devDependencies": {

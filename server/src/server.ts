@@ -7,6 +7,7 @@ import {
   Diagnostic,
   DiagnosticSeverity,
   InitializeResult,
+  LocationLink,
   ProposedFeatures,
   Range,
   TextDocumentPositionParams,
@@ -14,13 +15,14 @@ import {
   TextDocuments,
   createConnection
 } from "vscode-languageserver/node";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 const peggy_unsafe: any = peggy;  // throw away type safety to get at compiler
-type RuleCache = {
-  [uri: string]: string[]
+type AstCache = {
+  [uri: string]: any
 }
-const rules: RuleCache = {};
+const AST: AstCache = {};
+const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+-=|\\;:'",./<>?]+/g;
 
 // Create a connection for the server. The connection uses
 // stdin / stdout for message passing
@@ -41,38 +43,26 @@ connection.onInitialize((): InitializeResult => {
     capabilities: {
       // Tell the client that the server works in FULL text document sync mode
       textDocumentSync: TextDocumentSyncKind.Incremental,
-      completionProvider: {}
+      completionProvider: {},
+      definitionProvider: true
     }
   };
 });
 
-connection.onCompletion(
-  (pos: TextDocumentPositionParams): CompletionItem[] => {
-    const docRules = rules[pos.textDocument.uri];
-    if (!docRules || (docRules.length === 0)) {
-      return null;
-    }
-    const document = documents.get(pos.textDocument.uri);
-    if (!document) {
-      return null;
-    }
-    const maxRule = docRules.reduce((t, r) => Math.max(t, r.length), 0);
-    const endOffset = document.offsetAt(pos.position);
-    const startOffset = (endOffset < maxRule) ? 0 : (endOffset - maxRule);
-    const endPos = document.positionAt(startOffset);
-    const words = document.getText({
-      start: pos.position,
-      end: endPos
-    }).split(/\P{L}/gmu);  // example "|rule" => ["", "rule"]
-    const word = words[words.length - 1];
-    if (word === "") {
-      return null;
-    }
-
-    return docRules.filter(r => r.startsWith(word)).map(label => ({
-      label
-    }));
+function getWordAtPosition(document:TextDocument, position:Position): string {
+  const line = document.getText({
+    start: { line: position.line, character: 0 },
+    end: { line: position.line + 1, character: 0 }
   });
+  for (const match of line.matchAll(WORD_RE)) {
+    if ((match.index <= position.character)
+        && ((match.index + match[0].length) >= position.character)) {
+      return match[0];
+    }
+  }
+
+  return "";
+}
 
 function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
   return {
@@ -81,8 +71,61 @@ function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
   };
 }
 
+connection.onCompletion((pos: TextDocumentPositionParams): CompletionItem[] => {
+  const docAST = AST[pos.textDocument.uri];
+  if (!docAST || (docAST.rules.length === 0)) {
+    return null;
+  }
+  const document = documents.get(pos.textDocument.uri);
+  if (!document) {
+    return null;
+  }
+  const word = getWordAtPosition(document, pos.position);
+  if (word === "") {
+    return null;
+  }
+
+  return docAST.rules.filter(
+    (r:any) => r.name.startsWith(word)).map((r:any) => ({
+      label: r.name
+    }));
+});
+
+connection.onDefinition((pos: TextDocumentPositionParams) : LocationLink[] => {
+  const docAST = AST[pos.textDocument.uri];
+  if (!docAST || (docAST.rules.length === 0)) {
+    return null;
+  }
+  const document = documents.get(pos.textDocument.uri);
+  if (!document) {
+    return null;
+  }
+  const word = getWordAtPosition(document, pos.position);
+  if (word === "") {
+    return null;
+  }
+
+  const rule = docAST.rules.find((r:any) => r.name === word);
+  const ruleRange = peggyLoc_to_vscodeRange(rule.location);
+  const ruleNameRange = {
+    start: ruleRange.start,
+    end: {
+      line: ruleRange.start.line,
+      character: ruleRange.start.character + rule.name.length
+    }
+  };
+
+  return [
+    {
+      targetUri: pos.textDocument.uri,
+      targetRange: ruleRange,
+      targetSelectionRange: ruleNameRange
+    }
+  ];
+});
+
 documents.onDidClose((change) => {
-  delete rules[change.document.uri.toString()];
+  delete AST[change.document.uri.toString()];
 });
 
 documents.onDidChangeContent((change) => {
@@ -95,7 +138,7 @@ documents.onDidChangeContent((change) => {
     peggy_unsafe.compiler.compile(ast, {
       check: Object.values(peggy_unsafe.compiler.passes.check)
     });
-    rules[change.document.uri] = ast.rules.map((r:any) => r.name);
+    AST[change.document.uri] = ast;
   } catch (error) {
     const err = error as peggy.GrammarError;
     diagnostics.push({
