@@ -17,6 +17,23 @@ Errors in the grammar are highlighted. Unfortunately only one error at a time is
 
 ![Error Reporting](/images/error.png)
 
+## Go to / Peek Definition
+
+Right-click a rule name, and go to its definition.
+
+## Go to / Peek References
+
+Right click a rule name, and see all of the places it is used.
+
+## Rename Symbol
+
+Rename a rule and all of the places that it is used.
+
+## Outline / Symbol Support
+
+See the current rule in the breadcrumbs at the top of the editor, and a list
+of all of the rules in the Outline view.
+
 ## Contributing
 
 Feel free to contribute to this extension [here](https://github.com/peggyjs/code-peggy-language).
