@@ -21,18 +21,28 @@ Errors in the grammar are highlighted. Unfortunately only one error at a time is
 
 Right-click a rule name, and go to its definition.
 
+![Go To Definition](/images/GoToDefinition.png)
+
 ## Go to / Peek References
 
 Right click a rule name, and see all of the places it is used.
+
+![Go To References](/images/GoToReferences.png)
 
 ## Rename Symbol
 
 Rename a rule and all of the places that it is used.
 
+![Rename Symbol](/images/renameSymbol.png)
+
 ## Outline / Symbol Support
 
 See the current rule in the breadcrumbs at the top of the editor, and a list
 of all of the rules in the Outline view.
+
+![Breadcrumbs](/images/breadcrumbs.png)
+
+![Outline](/images/outline.png)
 
 ## Contributing
 
