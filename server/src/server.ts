@@ -215,11 +215,11 @@ connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
 
 connection.onDocumentSymbol((pos: DocumentSymbolParams) : DocumentSymbol[] => {
   const docAST = AST[pos.textDocument.uri];
-  if (!docAST || (docAST.rules.length === 0)) {
+  if (!docAST) {
     return null;
   }
 
-  return docAST.rules.map((r:any) => {
+  const symbols = docAST.rules.map((r:any) => {
     const range = peggyLoc_to_vscodeRange(r.location);
     const ret:DocumentSymbol = {
       name: r.name,
@@ -233,6 +233,26 @@ connection.onDocumentSymbol((pos: DocumentSymbolParams) : DocumentSymbol[] => {
 
     return ret;
   });
+  if (docAST.initializer) {
+    const range = peggyLoc_to_vscodeRange(docAST.initializer.location);
+    symbols.unshift({
+      name: "{Per-parse initializer}",
+      kind: SymbolKind.Constructor,
+      range,
+      selectionRange: ruleNameRange("{", range)
+    });
+  }
+  if (docAST.topLevelInitializer) {
+    const range = peggyLoc_to_vscodeRange(docAST.topLevelInitializer.location);
+    symbols.unshift({
+      name: "{{Global initializer}}",
+      kind: SymbolKind.Constructor,
+      range,
+      selectionRange: ruleNameRange("{{", range)
+    });
+  }
+
+  return symbols;
 });
 
 documents.onDidClose((change) => {
