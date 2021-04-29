@@ -23,8 +23,9 @@
 			]
 		},
 		{
+			"label": "watch",
 			"type": "npm",
-			"script": "watch",
+			"script": "watch-ts",
 			"isBackground": true,
 			"group": {
 				"kind": "build",
