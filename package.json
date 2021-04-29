@@ -72,7 +72,8 @@
     "webpack:dev": "npm run clean && webpack --mode none",
     "precompile": "npm run lint",
     "compile": "npm run webpack",
-    "watch": "webpack watch --mode development"
+    "watch": "webpack watch --mode development",
+    "watch-ts": "tsc -b -w"
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "0.0.1",
