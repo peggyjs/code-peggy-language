@@ -9,14 +9,11 @@
 
     "noImplicitAny": true,
 
+    "rootDir": ".",
     "outDir": "out",
   },
   "include": [
-    "src"
-  ],
-  "references": [
-    {
-      "path": "./server",
-    }
+    "client",
+    "server"
   ]
 }
