@@ -29,7 +29,7 @@ type AstCache = {
   [uri: string]: any
 }
 const AST: AstCache = {};
-const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+-=|\\;:'",./<>?]+/g;
+const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+\-=|\\;:'",./<>?]+/g;
 
 // Create a connection for the server. The connection uses
 // stdin / stdout for message passing
