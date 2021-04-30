@@ -11,3 +11,4 @@ images/*.svg
 **/tsconfig.tsbuildinfo
 **/*.vsix
 **/*webpack.config.js
+.github/
