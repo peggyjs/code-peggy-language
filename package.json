@@ -28,7 +28,7 @@
   "activationEvents": [
     "onLanguage:peggy"
   ],
-  "main": "./out/main",
+  "main": "./out/client/client",
   "contributes": {
     "languages": [
       {
@@ -66,14 +66,14 @@
   },
   "scripts": {
     "lint": "eslint . --ext ts --ext js",
-    "clean": "rimraf ./out ./server/out ./server/tsconfig.tsbuildinfo",
+    "clean": "rimraf ./out",
     "vscode:prepublish": "npm run webpack",
     "webpack": "npm run clean && webpack --mode production",
     "webpack:dev": "npm run clean && webpack --mode none",
     "precompile": "npm run lint",
     "compile": "npm run webpack",
-    "watch": "webpack watch --mode development",
-    "watch-ts": "tsc -b -w"
+    "watch:webpack": "webpack watch --mode development",
+    "watch:tsc": "tsc -b -w"
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "0.0.1",

@@ -13,7 +13,7 @@ import {
 export function activate(context: ExtensionContext) {
   // The server is implemented in node
   const serverModule
-    = context.asAbsolutePath(path.join("out", "server.js"));
+    = context.asAbsolutePath(path.join("out", "server", "server.js"));
 
   // The debug options for the server
   const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };

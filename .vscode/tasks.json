@@ -25,7 +25,7 @@
 		{
 			"label": "watch",
 			"type": "npm",
-			"script": "watch-ts",
+			"script": "watch:tsc",
 			"isBackground": true,
 			"group": {
 				"kind": "build",

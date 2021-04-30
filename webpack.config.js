@@ -41,11 +41,11 @@ module.exports = {
   },
   devtool: "source-map",
   entry: {
-    "server": "./server/src/server.ts",
-    "main": "./src/main.ts",
+    "server": "./server/server.ts",
+    "client": "./client/client.ts",
   },
   output: {
-    filename: "[name].js",
+    filename: "[name]/[name].js",
     path: path.join(__dirname, "out"),
     libraryTarget: "commonjs"
   }
