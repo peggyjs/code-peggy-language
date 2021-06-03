@@ -24,12 +24,20 @@ import {
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
-const peggy_unsafe: any = peggy;  // throw away type safety to get at compiler
 type AstCache = {
   [uri: string]: any
 }
 const AST: AstCache = {};
 const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+\-=|\\;:'",./<>?]+/g;
+const PASSES: peggy.compiler.Stages = {
+  check: peggy.compiler.passes.check,
+  transform: peggy.compiler.passes.transform.filter(
+    // inferenceMatchResult will eventually
+    // generate warnings.
+    n => n.name === "inferenceMatchResult"
+  ),
+  generate: [],
+};
 
 // Create a connection for the server. The connection uses
 // stdin / stdout for message passing
@@ -157,7 +165,7 @@ connection.onReferences((pos: TextDocumentPositionParams) : Location[] => {
     return null;
   }
   const results:Location[] = [];
-  const visit = peggy_unsafe.compiler.visitor.build({
+  const visit = peggy.compiler.visitor.build({
     rule_ref(node:any): void {
       if (node.name !== word) { return; }
       results.push({
@@ -186,7 +194,7 @@ connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
   }
 
   const edits:TextEdit[] = [];
-  const visit = peggy_unsafe.compiler.visitor.build({
+  const visit = peggy.compiler.visitor.build({
     rule_ref(node:any): void {
       if (node.name !== word) { return; }
       edits.push({
@@ -263,21 +271,31 @@ documents.onDidChangeContent((change) => {
   const diagnostics: Diagnostic[] = [];
 
   try {
-    const ast = peggy_unsafe.parser.parse(change.document.getText(), {
-      grammarSource: change.document.uri
+    const ast = peggy.parser.parse(change.document.getText(), {
+      grammarSource: change.document.uri,
+      reservedWords: peggy.RESERVED_WORDS,
     });
-    peggy_unsafe.compiler.compile(ast, {
-      check: Object.values(peggy_unsafe.compiler.passes.check)
-    });
+    peggy.compiler.compile(ast, PASSES);
     AST[change.document.uri] = ast;
   } catch (error) {
     const err = error as peggy.GrammarError;
-    diagnostics.push({
+    const d: Diagnostic = {
       severity: DiagnosticSeverity.Error,
       range: peggyLoc_to_vscodeRange(err.location),
       message: err.name + ": " + err.message,
-      source: "peggy-language"
-    });
+      source: "peggy-language",
+      relatedInformation: [],
+    };
+    for (const diag of err.diagnostics) {
+      d.relatedInformation.push({
+        location: {
+          uri: diag.location.source,
+          range: peggyLoc_to_vscodeRange(diag.location),
+        },
+        message: diag.message
+      });
+    }
+    diagnostics.push(d);
   }
 
   // Send the computed diagnostics to VS Code.
