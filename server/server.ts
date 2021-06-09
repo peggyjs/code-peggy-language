@@ -1,5 +1,3 @@
-"use strict";
-
 import * as peggy from "peggy";
 import {
   CompletionItem,
@@ -20,19 +18,19 @@ import {
   TextDocuments,
   TextEdit,
   WorkspaceEdit,
-  createConnection
+  createConnection,
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 type AstCache = {
-  [uri: string]: any
-}
+  [uri: string]: any;
+};
 const AST: AstCache = {};
 const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+\-=|\\;:'",./<>?]+/g;
 const PASSES: peggy.compiler.Stages = {
   check: peggy.compiler.passes.check,
   transform: peggy.compiler.passes.transform.filter(
-    // inferenceMatchResult will eventually
+    // `inferenceMatchResult` will eventually
     // generate warnings.
     n => n.name === "inferenceMatchResult"
   ),
@@ -53,26 +51,24 @@ documents.listen(connection);
 // After the server has started the client sends an initilize request. The
 // server receives in the passed params the rootPath of the workspace plus the
 // client capabilites.
-connection.onInitialize((): InitializeResult => {
-  return {
-    capabilities: {
-      // Tell the client that the server works in FULL text document sync mode
-      textDocumentSync: TextDocumentSyncKind.Incremental,
-      completionProvider: {},
-      definitionProvider: true,
-      documentSymbolProvider: {
-        label: "Peggy Rules"
-      },
-      referencesProvider: true,
-      renameProvider: true
-    }
-  };
-});
+connection.onInitialize((): InitializeResult => ({
+  capabilities: {
+    // Tell the client that the server works in FULL text document sync mode
+    textDocumentSync: TextDocumentSyncKind.Incremental,
+    completionProvider: {},
+    definitionProvider: true,
+    documentSymbolProvider: {
+      label: "Peggy Rules",
+    },
+    referencesProvider: true,
+    renameProvider: true,
+  },
+}));
 
-function getWordAtPosition(document:TextDocument, position:Position): string {
+function getWordAtPosition(document: TextDocument, position: Position): string {
   const line = document.getText({
     start: { line: position.line, character: 0 },
-    end: { line: position.line + 1, character: 0 }
+    end: { line: position.line + 1, character: 0 },
   });
   for (const match of line.matchAll(WORD_RE)) {
     if ((match.index <= position.character)
@@ -87,17 +83,17 @@ function getWordAtPosition(document:TextDocument, position:Position): string {
 function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
   return {
     start: { line: loc.start.line - 1, character: loc.start.column - 1 },
-    end: { line: loc.end.line - 1, character: loc.end.column - 1 }
+    end: { line: loc.end.line - 1, character: loc.end.column - 1 },
   };
 }
 
-function ruleNameRange(name:string, ruleRange:Range): Range {
+function ruleNameRange(name: string, ruleRange: Range): Range {
   return {
     start: ruleRange.start,
     end: {
       line: ruleRange.start.line,
-      character: ruleRange.start.character + name.length
-    }
+      character: ruleRange.start.character + name.length,
+    },
   };
 }
 
@@ -116,12 +112,13 @@ connection.onCompletion((pos: TextDocumentPositionParams): CompletionItem[] => {
   }
 
   return docAST.rules.filter(
-    (r:any) => r.name.startsWith(word)).map((r:any) => ({
-      label: r.name
-    }));
+    (r: any) => r.name.startsWith(word)
+  ).map((r: any) => ({
+    label: r.name,
+  }));
 });
 
-connection.onDefinition((pos: TextDocumentPositionParams) : LocationLink[] => {
+connection.onDefinition((pos: TextDocumentPositionParams): LocationLink[] => {
   const docAST = AST[pos.textDocument.uri];
   if (!docAST || (docAST.rules.length === 0)) {
     return null;
@@ -135,7 +132,7 @@ connection.onDefinition((pos: TextDocumentPositionParams) : LocationLink[] => {
     return null;
   }
 
-  const rule = docAST.rules.find((r:any) => r.name === word);
+  const rule = docAST.rules.find((r: any) => r.name === word);
   if (!rule) {
     return null;
   }
@@ -146,12 +143,12 @@ connection.onDefinition((pos: TextDocumentPositionParams) : LocationLink[] => {
     {
       targetUri: pos.textDocument.uri,
       targetRange,
-      targetSelectionRange
-    }
+      targetSelectionRange,
+    },
   ];
 });
 
-connection.onReferences((pos: TextDocumentPositionParams) : Location[] => {
+connection.onReferences((pos: TextDocumentPositionParams): Location[] => {
   const docAST = AST[pos.textDocument.uri];
   if (!docAST || (docAST.rules.length === 0)) {
     return null;
@@ -164,22 +161,22 @@ connection.onReferences((pos: TextDocumentPositionParams) : Location[] => {
   if (word === "") {
     return null;
   }
-  const results:Location[] = [];
+  const results: Location[] = [];
   const visit = peggy.compiler.visitor.build({
-    rule_ref(node:any): void {
+    rule_ref(node: any): void {
       if (node.name !== word) { return; }
       results.push({
         uri: pos.textDocument.uri,
-        range: peggyLoc_to_vscodeRange(node.location)
+        range: peggyLoc_to_vscodeRange(node.location),
       });
-    }
+    },
   });
   visit(docAST);
 
   return results;
 });
 
-connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
+connection.onRenameRequest((pos: RenameParams): WorkspaceEdit => {
   const docAST = AST[pos.textDocument.uri];
   if (!docAST || (docAST.rules.length === 0)) {
     return null;
@@ -193,22 +190,22 @@ connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
     return null;
   }
 
-  const edits:TextEdit[] = [];
+  const edits: TextEdit[] = [];
   const visit = peggy.compiler.visitor.build({
-    rule_ref(node:any): void {
+    rule_ref(node: any): void {
       if (node.name !== word) { return; }
       edits.push({
         newText: pos.newName,
-        range: peggyLoc_to_vscodeRange(node.location)
+        range: peggyLoc_to_vscodeRange(node.location),
       });
     },
 
-    rule(node:any): void {
+    rule(node: any): void {
       visit(node.expression);
       if (node.name !== word) { return; }
       edits.push({
         newText: pos.newName,
-        range: ruleNameRange(node.name, peggyLoc_to_vscodeRange(node.location))
+        range: ruleNameRange(node.name, peggyLoc_to_vscodeRange(node.location)),
       });
     },
   });
@@ -216,24 +213,24 @@ connection.onRenameRequest((pos: RenameParams) : WorkspaceEdit => {
 
   return {
     changes: {
-      [pos.textDocument.uri]: edits
-    }
+      [pos.textDocument.uri]: edits,
+    },
   };
 });
 
-connection.onDocumentSymbol((pos: DocumentSymbolParams) : DocumentSymbol[] => {
+connection.onDocumentSymbol((pos: DocumentSymbolParams): DocumentSymbol[] => {
   const docAST = AST[pos.textDocument.uri];
   if (!docAST) {
     return null;
   }
 
-  const symbols = docAST.rules.map((r:any) => {
+  const symbols = docAST.rules.map((r: any) => {
     const range = peggyLoc_to_vscodeRange(r.location);
-    const ret:DocumentSymbol = {
+    const ret: DocumentSymbol = {
       name: r.name,
       kind: SymbolKind.Function,
       range,
-      selectionRange: ruleNameRange(r.name, range)
+      selectionRange: ruleNameRange(r.name, range),
     };
     if (r.expression.type === "named") {
       ret.detail = r.expression.name;
@@ -247,7 +244,7 @@ connection.onDocumentSymbol((pos: DocumentSymbolParams) : DocumentSymbol[] => {
       name: "{Per-parse initializer}",
       kind: SymbolKind.Constructor,
       range,
-      selectionRange: ruleNameRange("{", range)
+      selectionRange: ruleNameRange("{", range),
     });
   }
   if (docAST.topLevelInitializer) {
@@ -256,18 +253,18 @@ connection.onDocumentSymbol((pos: DocumentSymbolParams) : DocumentSymbol[] => {
       name: "{{Global initializer}}",
       kind: SymbolKind.Constructor,
       range,
-      selectionRange: ruleNameRange("{{", range)
+      selectionRange: ruleNameRange("{{", range),
     });
   }
 
   return symbols;
 });
 
-documents.onDidClose((change) => {
+documents.onDidClose(change => {
   delete AST[change.document.uri.toString()];
 });
 
-documents.onDidChangeContent((change) => {
+documents.onDidChangeContent(change => {
   const diagnostics: Diagnostic[] = [];
 
   try {
@@ -292,7 +289,7 @@ documents.onDidChangeContent((change) => {
           uri: diag.location.source,
           range: peggyLoc_to_vscodeRange(diag.location),
         },
-        message: diag.message
+        message: diag.message,
       });
     }
     diagnostics.push(d);

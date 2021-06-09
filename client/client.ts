@@ -1,5 +1,3 @@
-"use strict";
-
 import * as path from "path";
 
 import { ExtensionContext, workspace } from "vscode";
@@ -7,7 +5,7 @@ import {
   LanguageClient,
   LanguageClientOptions,
   ServerOptions,
-  TransportKind
+  TransportKind,
 } from "vscode-languageclient/node";
 
 export function activate(context: ExtensionContext) {
@@ -22,7 +20,7 @@ export function activate(context: ExtensionContext) {
   // Otherwise the run options are used
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.ipc },
-    debug: { module: serverModule, options: debugOptions }
+    debug: { module: serverModule, options: debugOptions },
   };
 
   // Options to control the language client
@@ -32,8 +30,8 @@ export function activate(context: ExtensionContext) {
     synchronize: {
       // Notify the server about file changes to '.clientrc files
       // condisposabletain in the workspace
-      fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
-    }
+      fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
+    },
   };
 
   // Create the language client and start the client.
