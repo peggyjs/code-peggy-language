@@ -1,0 +1,25 @@
+{
+    "fileTypes": [
+      "js",
+      "jsx",
+      "mjs",
+      "cjs",
+      "es6",
+      "es",
+      "esm",
+      "ts",
+      "tsx",
+      "vue",
+      "svelte"
+    ],
+    "injectionSelector": "L:source -string",
+    "patterns": [
+      {
+        "contentName": "meta.embedded.block.peggy",
+        "begin": "(peg)(`)",
+        "end": "`",
+        "patterns": [{ "include": "source.peggy" }]
+      }
+    ],
+    "scopeName": "inline.peggy"
+  }

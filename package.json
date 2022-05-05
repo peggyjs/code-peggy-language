@@ -55,6 +55,21 @@
         "embeddedLanguages": {
           "meta.embedded.block.javascript": "javascript"
         }
+      },
+      {
+        "injectTo": [
+          "source.js",
+          "source.ts",
+          "source.js.jsx",
+          "source.tsx",
+          "source.vue",
+          "source.svelte"
+        ],
+        "scopeName": "inline.peggy",
+        "path": "./syntaxes/peggy.js.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.peggy": "peggy"
+        }
       }
     ],
     "snippets": [
