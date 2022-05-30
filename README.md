@@ -13,7 +13,7 @@ See the [Marketplace](https://marketplace.visualstudio.com/items?itemName=PeggyJ
 
 ## Error Reporting
 
-Errors in the grammar are highlighted. Unfortunately only one error at a time is highlighted.
+Errors in the grammar are highlighted.
 
 ![Error Reporting](/images/error.png)
 

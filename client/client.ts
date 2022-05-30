@@ -8,6 +8,8 @@ import {
   TransportKind,
 } from "vscode-languageclient/node";
 
+let client: LanguageClient;
+
 export function activate(context: ExtensionContext) {
   // The server is implemented in node
   const serverModule
@@ -20,7 +22,11 @@ export function activate(context: ExtensionContext) {
   // Otherwise the run options are used
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.ipc },
-    debug: { module: serverModule, options: debugOptions },
+    debug: {
+      module: serverModule,
+      transport: TransportKind.ipc,
+      options: debugOptions,
+    },
   };
 
   // Options to control the language client
@@ -35,14 +41,18 @@ export function activate(context: ExtensionContext) {
   };
 
   // Create the language client and start the client.
-  const server = new LanguageClient(
+  client = new LanguageClient(
     "Language Server Peggy",
     serverOptions,
     clientOptions
   );
-  const disposable = server.start();
+  client.registerProposedFeatures();
+  client.start();
+}
 
-  // Push the disposable to the context's subscriptions so that the
-  // client can be deactivated on extension deactivation
-  context.subscriptions.push(disposable);
+export function deactivate() {
+  if (client) {
+    return client.stop();
+  }
+  return undefined;
 }

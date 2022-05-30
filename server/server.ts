@@ -1,4 +1,5 @@
 import * as peggy from "peggy";
+
 import {
   CompletionItem,
   Connection,
@@ -22,6 +23,19 @@ import {
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
+function getWarnings(
+  ast: peggy.ast.Grammar,
+  options: peggy.ParserBuildOptions,
+  session: peggy.Session
+) {
+  // Hack to get session information out of the compiler, even
+  // if there are no errors, so no exception gets thrown.
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ast.code = session;
+}
+
 type AstCache = {
   [uri: string]: any;
 };
@@ -29,12 +43,8 @@ const AST: AstCache = {};
 const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+\-=|\\;:'",./<>?]+/g;
 const PASSES: peggy.compiler.Stages = {
   check: peggy.compiler.passes.check,
-  transform: peggy.compiler.passes.transform.filter(
-    // `inferenceMatchResult` will eventually
-    // generate warnings.
-    n => n.name === "inferenceMatchResult"
-  ),
-  generate: [],
+  transform: peggy.compiler.passes.transform,
+  generate: [getWarnings],
 };
 
 // Create a connection for the server. The connection uses
@@ -81,6 +91,9 @@ function getWordAtPosition(document: TextDocument, position: Position): string {
 }
 
 function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
+  if (!loc) {
+    throw new Error("loc is null");
+  }
   return {
     start: { line: loc.start.line - 1, character: loc.start.column - 1 },
     end: { line: loc.end.line - 1, character: loc.end.column - 1 },
@@ -264,6 +277,56 @@ documents.onDidClose(change => {
   delete AST[change.document.uri.toString()];
 });
 
+function addProblemDiagnostics(
+  problems: peggy.Problem[],
+  diagnostics: Diagnostic[]
+) {
+  for (const [sev, msg, loc, diags] of problems) {
+    let severity: DiagnosticSeverity;
+    switch (sev) {
+      case "error":
+        severity = DiagnosticSeverity.Error;
+        break;
+      case "warning":
+        severity = DiagnosticSeverity.Warning;
+        break;
+      case "info":
+        severity = DiagnosticSeverity.Information;
+        break;
+      default:
+        throw new Error("Unknown Severity: " + sev);
+    }
+    if (loc) {
+      const d: Diagnostic = {
+        severity,
+        range: peggyLoc_to_vscodeRange(loc),
+        message: msg,
+        source: "peggy-language",
+        relatedInformation: [],
+      };
+      if (diags) {
+        for (const diag of diags) {
+          d.relatedInformation.push({
+            location: {
+              uri: diag.location.source,
+              range: peggyLoc_to_vscodeRange(diag.location),
+            },
+            message: diag.message,
+          });
+        }
+      }
+      diagnostics.push(d);
+    } else {
+      connection.console.log(`${sev}: ${msg}`);
+      if (diags) {
+        for (const diag of diags) {
+          connection.console.log(`  ${diag.message}`);
+        }
+      }
+    }
+  }
+}
+
 documents.onDidChangeContent(change => {
   const diagnostics: Diagnostic[] = [];
 
@@ -272,27 +335,34 @@ documents.onDidChangeContent(change => {
       grammarSource: change.document.uri,
       reservedWords: peggy.RESERVED_WORDS,
     });
-    peggy.compiler.compile(ast, PASSES);
+    // Output type "source-and-map" returns ast.code, which, if there
+    // were no errors, will be set to the info session by getWarnings().
+    const session = peggy.compiler.compile(
+      ast,
+      PASSES,
+      { output: "source-and-map" }
+    ) as unknown as peggy.Session;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    addProblemDiagnostics(session.problems as peggy.Problem[], diagnostics);
     AST[change.document.uri] = ast;
   } catch (error) {
-    const err = error as peggy.GrammarError;
-    const d: Diagnostic = {
-      severity: DiagnosticSeverity.Error,
-      range: peggyLoc_to_vscodeRange(err.location),
-      message: err.name + ": " + err.message,
-      source: "peggy-language",
-      relatedInformation: [],
-    };
-    for (const diag of err.diagnostics) {
-      d.relatedInformation.push({
-        location: {
-          uri: diag.location.source,
-          range: peggyLoc_to_vscodeRange(diag.location),
+    if (error instanceof peggy.GrammarError) {
+      addProblemDiagnostics(error.problems, diagnostics);
+    } else {
+      connection.console.error(error.toString());
+      const d: Diagnostic = {
+        severity: DiagnosticSeverity.Error,
+        range: {
+          start: { line: 0, character: 0 },
+          end: { line: 0, character: 0 },
         },
-        message: diag.message,
-      });
+        message: error.stack ?? error.message,
+        source: "peggy-language",
+        relatedInformation: [],
+      };
+      diagnostics.push(d);
     }
-    diagnostics.push(d);
   }
 
   // Send the computed diagnostics to VS Code.
