@@ -30,6 +30,22 @@
   ],
   "main": "./out/client/client",
   "contributes": {
+    "configuration": {
+      "title": "Peggy Language",
+      "type": "object",
+      "properties": {
+        "peggyLanguageServer.consoleInfo": {
+          "description": "Show info messages that don't have locations in the console",
+          "type": "boolean",
+          "default": false
+        },
+        "peggyLanguageServer.markInfo": {
+          "description": "Mark all diagnostics, even merely informative ones",
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
     "languages": [
       {
         "id": "peggy",

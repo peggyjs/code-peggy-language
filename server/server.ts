@@ -75,6 +75,26 @@ connection.onInitialize((): InitializeResult => ({
   },
 }));
 
+interface PeggySettings {
+  consoleInfo: boolean;
+  markInfo: boolean;
+}
+
+const defaultSettings: PeggySettings = {
+  consoleInfo: false,
+  markInfo: true,
+};
+let globalSettings: PeggySettings = defaultSettings;
+
+connection.onDidChangeConfiguration(change => {
+  if (change.settings) {
+    globalSettings = <PeggySettings>(change.settings.peggyLanguageServer);
+  }
+
+  // Revalidate all open text documents
+  documents.all().forEach(validateTextDocument);
+});
+
 function getWordAtPosition(document: TextDocument, position: Position): string {
   const line = document.getText({
     start: { line: position.line, character: 0 },
@@ -282,57 +302,52 @@ function addProblemDiagnostics(
   diagnostics: Diagnostic[]
 ) {
   for (const [sev, msg, loc, diags] of problems) {
-    let severity: DiagnosticSeverity;
-    switch (sev) {
-      case "error":
-        severity = DiagnosticSeverity.Error;
-        break;
-      case "warning":
-        severity = DiagnosticSeverity.Warning;
-        break;
-      case "info":
-        severity = DiagnosticSeverity.Information;
-        break;
-      default:
-        throw new Error("Unknown Severity: " + sev);
-    }
+    const severity: DiagnosticSeverity = {
+      error: DiagnosticSeverity.Error,
+      warning: DiagnosticSeverity.Warning,
+      info: DiagnosticSeverity.Information,
+    }[sev];
     if (loc) {
-      const d: Diagnostic = {
-        severity,
-        range: peggyLoc_to_vscodeRange(loc),
-        message: msg,
-        source: "peggy-language",
-        relatedInformation: [],
-      };
-      if (diags) {
-        for (const diag of diags) {
-          d.relatedInformation.push({
-            location: {
-              uri: diag.location.source,
-              range: peggyLoc_to_vscodeRange(diag.location),
-            },
-            message: diag.message,
-          });
+      if (globalSettings.markInfo || (sev !== "info")) {
+        const d: Diagnostic = {
+          severity,
+          range: peggyLoc_to_vscodeRange(loc),
+          message: msg,
+          source: "peggy-language",
+          relatedInformation: [],
+        };
+        if (diags) {
+          for (const diag of diags) {
+            d.relatedInformation.push({
+              location: {
+                uri: diag.location.source,
+                range: peggyLoc_to_vscodeRange(diag.location),
+              },
+              message: diag.message,
+            });
+          }
         }
+        diagnostics.push(d);
       }
-      diagnostics.push(d);
     } else {
-      connection.console.log(`${sev}: ${msg}`);
-      if (diags) {
-        for (const diag of diags) {
-          connection.console.log(`  ${diag.message}`);
+      if (globalSettings.consoleInfo) {
+        connection.console.log(`${sev}: ${msg}`);
+        if (diags) {
+          for (const diag of diags) {
+            connection.console.log(`  ${diag.message}`);
+          }
         }
       }
     }
   }
 }
 
-documents.onDidChangeContent(change => {
+function validateTextDocument(doc: TextDocument): void {
   const diagnostics: Diagnostic[] = [];
 
   try {
-    const ast = peggy.parser.parse(change.document.getText(), {
-      grammarSource: change.document.uri,
+    const ast = peggy.parser.parse(doc.getText(), {
+      grammarSource: doc.uri,
       reservedWords: peggy.RESERVED_WORDS,
     });
     // Output type "source-and-map" returns ast.code, which, if there
@@ -345,7 +360,7 @@ documents.onDidChangeContent(change => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     addProblemDiagnostics(session.problems as peggy.Problem[], diagnostics);
-    AST[change.document.uri] = ast;
+    AST[doc.uri] = ast;
   } catch (error) {
     if (error instanceof peggy.GrammarError) {
       addProblemDiagnostics(error.problems, diagnostics);
@@ -366,7 +381,11 @@ documents.onDidChangeContent(change => {
   }
 
   // Send the computed diagnostics to VS Code.
-  connection.sendDiagnostics({ uri: change.document.uri, diagnostics });
+  connection.sendDiagnostics({ uri: doc.uri, diagnostics });
+}
+
+documents.onDidChangeContent(change => {
+  validateTextDocument(change.document);
 });
 
 // Listen on the connection

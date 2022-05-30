@@ -1,12 +1,12 @@
 import * as path from "path";
 
-import { ExtensionContext, workspace } from "vscode";
 import {
   LanguageClient,
   LanguageClientOptions,
   ServerOptions,
   TransportKind,
 } from "vscode-languageclient/node";
+import { ExtensionContext } from "vscode";
 
 let client: LanguageClient;
 
@@ -34,14 +34,13 @@ export function activate(context: ExtensionContext) {
     // Register the server for plain text documents
     documentSelector: [{ language: "peggy" }],
     synchronize: {
-      // Notify the server about file changes to '.clientrc files
-      // condisposabletain in the workspace
-      fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
+      configurationSection: "peggyLanguageServer",
     },
   };
 
   // Create the language client and start the client.
   client = new LanguageClient(
+    "peggyLanguageServer",
     "Language Server Peggy",
     serverOptions,
     clientOptions
