@@ -359,7 +359,7 @@ function validateTextDocument(doc: TextDocument): void {
     ) as unknown as peggy.Session;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    addProblemDiagnostics(session.problems as peggy.Problem[], diagnostics);
+    addProblemDiagnostics(session.problems, diagnostics);
     AST[doc.uri] = ast;
   } catch (error) {
     if (error instanceof peggy.GrammarError) {
