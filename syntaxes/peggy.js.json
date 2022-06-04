@@ -16,7 +16,7 @@
     "patterns": [
       {
         "contentName": "meta.embedded.block.peggy",
-        "begin": "(peg)(`)",
+        "begin": "(peg|peggy)(`)",
         "end": "`",
         "patterns": [{ "include": "source.peggy" }]
       }
