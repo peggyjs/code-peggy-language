@@ -7,13 +7,24 @@ Syntax highlighting and error reporting for [Peggy](http://peggyjs.org) in Visua
 
 See the [Marketplace](https://marketplace.visualstudio.com/items?itemName=PeggyJS.peggy-language).
 
+## Preferences
+
+- `peggyLanguageServer.consoleInfo` [default: *false*]: Show info messages
+  that don't have locations in the console.  Examples include diagnostics
+  about which compiler passes have been run.  This is mostly useful for
+  debugging the extension.
+- `peggyLanguageServer.markInfo` [default: *true*]: Mark all diagnostics, even
+  merely informative ones.  Some grammar compiler passes will give informative
+  messages about optimizations.  Those may be more annoying to you than
+  helpful, depending on your approach to grammar writing.
+
 ## Syntax Highlighting
 
 ![Syntax Highlighting](/images/highlighting.png)
 
 ## Error Reporting
 
-Errors in the grammar are highlighted. Unfortunately only one error at a time is highlighted.
+Errors in the grammar are highlighted.
 
 ![Error Reporting](/images/error.png)
 
