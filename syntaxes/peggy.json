@@ -92,7 +92,13 @@
         "charclass": {
             "begin": "\\[",
             "end": "\\]",
-            "name": "declaration.keyword.peggy"
+            "name": "declaration.keyword.peggy",
+            "patterns": [
+                {
+                    "match": "\\\\.",
+                    "name": "constant.character.escape.peggy"
+                }
+            ]
         },
         "defRule": {
             "match": "(\\w+)\\s*(?=\\=)",
