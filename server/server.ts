@@ -40,7 +40,7 @@ type AstCache = {
   [uri: string]: any;
 };
 const AST: AstCache = {};
-const WORD_RE = /[^\s{}[\]()`~!@#$%^&*_+\-=|\\;:'",./<>?]+/g;
+const WORD_RE = /[^\s{}[\]()`~!@#%^&*+\-=|\\;:'",./<>?]+/g;
 const PASSES: peggy.compiler.Stages = {
   check: peggy.compiler.passes.check,
   transform: peggy.compiler.passes.transform,
