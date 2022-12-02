@@ -22,6 +22,7 @@ import {
   createConnection,
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+import { debounce } from "debounce";
 
 function getWarnings(
   ast: peggy.ast.Grammar,
@@ -342,7 +343,7 @@ function addProblemDiagnostics(
   }
 }
 
-function validateTextDocument(doc: TextDocument): void {
+const validateTextDocument = debounce((doc: TextDocument): void => {
   const diagnostics: Diagnostic[] = [];
 
   try {
@@ -382,7 +383,7 @@ function validateTextDocument(doc: TextDocument): void {
 
   // Send the computed diagnostics to VS Code.
   connection.sendDiagnostics({ uri: doc.uri, diagnostics });
-}
+}, 150);
 
 documents.onDidChangeContent(change => {
   validateTextDocument(change.document);
