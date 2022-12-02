@@ -108,6 +108,7 @@
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "2.0.0",
+    "@types/debounce": "^1.2.1",
     "@types/node": "17.0.39",
     "@types/vscode": "^1.67.0",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
@@ -121,6 +122,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "debounce": "^1.2.1",
     "peggy": "^2.0.1",
     "vscode-languageclient": "^8.0.1",
     "vscode-languageserver": "^8.0.1",
