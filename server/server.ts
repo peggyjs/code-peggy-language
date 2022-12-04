@@ -22,7 +22,7 @@ import {
   createConnection,
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { debounce } from "debounce";
+import { debounce } from "./debounce";
 
 function getWarnings(
   ast: peggy.ast.Grammar,
