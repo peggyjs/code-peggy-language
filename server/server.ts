@@ -44,7 +44,9 @@ const AST: AstCache = {};
 const WORD_RE = /[^\s{}[\]()`~!@#%^&*+\-=|\\;:'",./<>?]+/g;
 const PASSES: peggy.compiler.Stages = {
   check: peggy.compiler.passes.check,
-  transform: peggy.compiler.passes.transform,
+  // Skip the removeProxyRules optimization,
+  // which interferes with rule definition lookup. See issue #29
+  transform: peggy.compiler.passes.transform.filter(fn => fn.name !== "removeProxyRules"),
   generate: [getWarnings],
 };
 
