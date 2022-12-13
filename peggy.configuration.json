@@ -1,12 +1,11 @@
 {
-	"comments": {
-		"lineComment": "//",
-		"blockComment": [ "/*", "*/" ]
-	},
-	// symbols used as brackets
-	"brackets": [
-		["(", ")"],
-		["[", "]"],
-        ["{", "}"]
-	]
+  "comments": {
+    "lineComment": "//",
+    "blockComment": [ "/*", "*/" ]
+  },
+  "brackets": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"]
+  ]
 }
