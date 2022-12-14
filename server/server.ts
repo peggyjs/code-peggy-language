@@ -46,7 +46,15 @@ const PASSES: peggy.compiler.Stages = {
   check: peggy.compiler.passes.check,
   // Skip the removeProxyRules optimization,
   // which interferes with rule definition lookup. See issue #29
-  transform: peggy.compiler.passes.transform.filter(fn => fn.name !== "removeProxyRules"),
+  //
+  // Peggy includes two transforms: [removeProxyRules, inferenceMatchResult]
+  // There's no good way to pick them by name, as Peggy library doesn't
+  // directly export them and the names get removed during code minification.
+  // So we include inferenceMatchResult based solely on its position.
+  // See: https://github.com/peggyjs/peggy/blob/main/lib/compiler/index.js#L52
+  transform: [
+    peggy.compiler.passes.transform[1],
+  ],
   generate: [getWarnings],
 };
 
