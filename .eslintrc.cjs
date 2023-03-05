@@ -2,9 +2,9 @@
 
 module.exports = {
   root: true,
-  extends: "@peggyjs",
+  extends: ["@peggyjs", "@peggyjs/eslint-config/typescript"],
   ignorePatterns: [
     "out",
-    "server/out"
+    "server/out",
   ],
 };

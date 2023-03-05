@@ -10,20 +10,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '15'
+          node-version: 18
 
       - name: Install
         run: npm install
-
 
       - name: Lint & Compile
         run: npm run compile
 
       - name: Package
         run: |
-          npm install -g vsce
+          npm install -g @vscode/vsce
           vsce package
           unzip -l *.vsix
