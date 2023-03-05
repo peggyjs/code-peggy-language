@@ -8,9 +8,9 @@ import {
 } from "vscode-languageclient/node";
 import { ExtensionContext } from "vscode";
 
-let client: LanguageClient;
+let client: LanguageClient = undefined;
 
-export function activate(context: ExtensionContext) {
+export function activate(context: ExtensionContext): void {
   // The server is implemented in node
   const serverModule
     = context.asAbsolutePath(path.join("out", "server", "server.js"));
@@ -49,7 +49,7 @@ export function activate(context: ExtensionContext) {
   client.start();
 }
 
-export function deactivate() {
+export function deactivate(): Promise<void> {
   if (client) {
     return client.stop();
   }
