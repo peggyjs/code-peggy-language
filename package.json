@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/peggyjs/code-peggy-language",
   "engines": {
-    "vscode": "^1.67.2"
+    "vscode": "^1.76.0"
   },
   "categories": [
     "Programming Languages",
