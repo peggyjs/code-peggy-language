@@ -22,19 +22,17 @@ import {
   createConnection,
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+import type { SourceNode } from "source-map-generator";
 import { debounce } from "./debounce";
 
-function getWarnings(
+function getSession(
   ast: peggy.ast.Grammar,
   options: peggy.ParserBuildOptions,
   session: peggy.Session
 ): void {
   // Hack to get session information out of the compiler, even
   // if there are no errors, so no exception gets thrown.
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error 2740
-  ast.code = session;
+  ast.code = session as unknown as SourceNode;
 }
 
 interface AstCache {
@@ -46,7 +44,7 @@ const PASSES: peggy.compiler.Stages = {
   check: peggy.compiler.passes.check,
   // Skip all transform steps. See issue #29
   transform: [],
-  generate: [getWarnings],
+  generate: [getSession],
 };
 
 // Create a connection for the server. The connection uses
@@ -152,11 +150,11 @@ const validateTextDocument = debounce((doc: TextDocument): void => {
       reservedWords: peggy.RESERVED_WORDS,
     });
     // Output type "source-and-map" returns ast.code, which, if there
-    // were no errors, will be set to the info session by getWarnings().
+    // were no errors, will be set to the info session by getSession().
     const session = peggy.compiler.compile(
       ast,
       PASSES,
-      { output: "source-and-map" }
+      { grammarSource: doc.uri, output: "source-and-map" }
     ) as unknown as peggy.Session;
     addProblemDiagnostics(session.problems, diagnostics);
     AST[doc.uri] = ast;
