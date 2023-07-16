@@ -10,9 +10,6 @@
     "email": "code.databyte@gmail.com"
   },
   "homepage": "https://github.com/peggyjs/code-peggy-language",
-  "engines": {
-    "vscode": "^1.76.0"
-  },
   "categories": [
     "Programming Languages",
     "Snippets"
@@ -129,5 +126,8 @@
     "vscode-languageclient": "^8.1.0",
     "vscode-languageserver": "^8.1.0",
     "vscode-languageserver-textdocument": "^1.0.8"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
   }
 }
