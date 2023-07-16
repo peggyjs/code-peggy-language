@@ -60,7 +60,11 @@
           ".peggy",
           ".pegjs"
         ],
-        "configuration": "./peggy.configuration.json"
+        "configuration": "./peggy.configuration.json",
+        "icon": {
+          "light": "./images/peggy-icon-light.png",
+          "dark": "./images/peggy-icon-dark.png"
+        }
       }
     ],
     "grammars": [
