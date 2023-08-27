@@ -42,7 +42,7 @@ module.exports = {
   devtool: "source-map",
   entry: {
     "server": "./server/server.ts",
-    "client": "./client/client.ts",
+    "client": "./client/index.ts",
   },
   output: {
     filename: "[name]/[name].js",
