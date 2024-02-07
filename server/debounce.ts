@@ -4,7 +4,8 @@
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
-  wait: number): (...args: Parameters<T>) => void {
+  wait: number
+): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout = undefined;
 
   return (...args: Parameters<T>) => {

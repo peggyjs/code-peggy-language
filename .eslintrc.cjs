@@ -8,6 +8,7 @@ module.exports = {
     "server/out",
   ],
   parserOptions: {
-    project: "tsconfig.json",
+    ecmaVersion: 2020,
+    project: true,
   },
 };
