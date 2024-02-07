@@ -129,6 +129,6 @@
     "vscode-languageserver-textdocument": "^1.0.11"
   },
   "engines": {
-    "vscode": "^1.80.0"
+    "vscode": "^1.86.0"
   }
 }
