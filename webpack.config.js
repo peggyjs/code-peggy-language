@@ -17,6 +17,7 @@ module.exports = {
     __dirname: false, // Leave the __dirname-behaviour intact
   },
   resolve: {
+    conditionNames: ["import", "require"],
     mainFields: ["module", "main"],
     extensions: [".ts", ".js"], // Support ts-files and js-files
   },

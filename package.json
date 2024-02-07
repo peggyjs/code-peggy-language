@@ -108,26 +108,27 @@
     "watch:tsc": "tsc -b -w"
   },
   "devDependencies": {
-    "@peggyjs/eslint-config": "3.0.5",
-    "@types/node": "20.4.2",
-    "@types/vscode": "^1.80.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@peggyjs/eslint-config": "3.1.0",
+    "@stylistic/eslint-plugin": "1.6.0",
+    "@types/node": "20.11.16",
+    "@types/vscode": "^1.86.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/experimental-utils": "^5.62.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.45.0",
-    "rimraf": "^5.0.1",
-    "ts-loader": "^9.4.4",
-    "typescript": "^5.1.6",
-    "webpack": "^5.88.1",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "peggy": "^3.0.2",
-    "vscode-languageclient": "^8.1.0",
-    "vscode-languageserver": "^8.1.0",
-    "vscode-languageserver-textdocument": "^1.0.8"
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11"
   },
   "engines": {
-    "vscode": "^1.80.0"
+    "vscode": "^1.86.0"
   }
 }
