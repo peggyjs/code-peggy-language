@@ -97,24 +97,24 @@
     ]
   },
   "scripts": {
-    "lint": "eslint . --ext ts --ext js",
+    "lint": "eslint .",
     "clean": "rimraf ./out",
     "vscode:prepublish": "npm run webpack",
     "webpack": "npm run clean && webpack --mode production",
     "webpack:dev": "npm run clean && webpack --mode none",
-    "precompile": "npm run lint",
-    "compile": "npm run webpack",
+    "prebuild": "npm run lint",
+    "build": "npm run webpack",
     "watch:webpack": "webpack watch --mode development",
     "watch:tsc": "tsc -b -w"
   },
   "devDependencies": {
-    "@peggyjs/eslint-config": "3.1.0",
-    "@stylistic/eslint-plugin": "1.6.0",
-    "@types/node": "20.11.16",
+    "@peggyjs/eslint-config": "3.2.1",
+    "@stylistic/eslint-plugin": "1.6.1",
+    "@types/node": "20.11.17",
     "@types/vscode": "^1.86.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/experimental-utils": "^5.62.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/parser": "^7.0.1",
     "eslint": "^8.56.0",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.1",
@@ -123,7 +123,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "peggy": "^3.0.2",
+    "peggy": "^4.0.0",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.11"
