@@ -22,9 +22,6 @@
     "type": "git",
     "url": "https://github.com/peggyjs/code-peggy-language"
   },
-  "activationEvents": [
-    "onLanguage:peggy"
-  ],
   "main": "./out/client/client",
   "contributes": {
     "configuration": {
