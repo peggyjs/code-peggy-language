@@ -105,13 +105,13 @@
     "watch:tsc": "tsc -b -w"
   },
   "devDependencies": {
-    "@peggyjs/eslint-config": "3.2.2",
+    "@peggyjs/eslint-config": "3.2.4",
     "@stylistic/eslint-plugin": "1.6.2",
     "@types/node": "20.11.20",
     "@types/vscode": "^1.86.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/experimental-utils": "^5.62.0",
-    "@typescript-eslint/parser": "^7.0.2",
+    "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
     "eslint-plugin-mocha": "10.3.0",
     "rimraf": "^5.0.5",
@@ -121,7 +121,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "peggy": "^4.0.1",
+    "peggy": "^4.0.2",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.11"
