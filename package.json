@@ -11,6 +11,7 @@
   },
   "homepage": "https://github.com/peggyjs/code-peggy-language",
   "categories": [
+    "Debuggers",
     "Programming Languages",
     "Snippets"
   ],
@@ -22,6 +23,11 @@
     "type": "git",
     "url": "https://github.com/peggyjs/code-peggy-language"
   },
+  "activationEvents": [
+    "onLanguage:peggy",
+    "onCommand:editor.peggyLive",
+    "onCommand:editor.peggyLiveFromRule"
+  ],
   "main": "./out/client/client",
   "contributes": {
     "configuration": {
@@ -90,6 +96,32 @@
       {
         "language": "peggy",
         "path": "./snippets/snippets.json"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "editor.peggyLive",
+          "group": "3_preview",
+          "when": "editorLangId == peggy"
+        },
+        {
+          "command": "editor.peggyLiveFromRule",
+          "group": "3_preview",
+          "when": "editorLangId == peggy"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "editor.peggyLive",
+        "title": "Peggy Live Preview",
+        "category": "preview"
+      },
+      {
+        "command": "editor.peggyLiveFromRule",
+        "title": "Peggy Live from rule under cursor",
+        "category": "preview"
       }
     ]
   },
