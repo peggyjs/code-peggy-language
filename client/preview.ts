@@ -20,7 +20,7 @@ interface GrammarConfig {
   start_rule: string | undefined;
   grammar_uri: Uri;
   input_uri: Uri;
-  timeout?: NodeJS.Timer;
+  timeout?: NodeJS.Timeout;
   grammar_text?: string;
   parser?: any;
 }
