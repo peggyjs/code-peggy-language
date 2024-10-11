@@ -11,6 +11,9 @@ importers:
       peggy:
         specifier: ^4.1.1
         version: 4.1.1
+      source-map-generator:
+        specifier: 0.8.0
+        version: 0.8.0
       vscode-languageclient:
         specifier: ^9.0.1
         version: 9.0.1
