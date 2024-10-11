@@ -20,6 +20,7 @@ module.exports = {
     conditionNames: ["import", "require"],
     mainFields: ["module", "main"],
     extensions: [".ts", ".js"], // Support ts-files and js-files
+    symlinks: true,
   },
   module: {
     rules: [{
