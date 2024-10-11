@@ -10,7 +10,8 @@
 **/test/**
 **/tsconfig.json
 **/tsconfig.tsbuildinfo
-eslint.config.js
+eslint.config.mjs
 images/*.svg
 node_modules/**
+pnpm-lock.yaml
 PUBLISHING

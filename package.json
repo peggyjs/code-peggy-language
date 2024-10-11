@@ -102,12 +102,14 @@
     "prebuild": "npm run lint",
     "build": "npm run webpack",
     "watch:webpack": "webpack watch --mode development",
-    "watch:tsc": "tsc -b -w"
+    "watch:tsc": "tsc -b -w",
+    "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "5.0.0",
     "@types/node": "22.7.5",
     "@types/vscode": "^1.94.0",
+    "@vscode/vsce": "3.1.1",
     "eslint": "^9.12.0",
     "eslint-plugin-mocha": "10.5.0",
     "rimraf": "^6.0.1",

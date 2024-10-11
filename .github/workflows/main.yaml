@@ -11,19 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 22
+          cache: pnpm
 
       - name: Install
-        run: npm install
+        run: pnpm install
 
-      - name: Lint & Compile
-        run: npm run build
+      - name: Lint
+        run: npm run lint
 
       - name: Package
-        run: |
-          npm install -g @vscode/vsce
-          vsce package
-          unzip -l *.vsix
+        run: npm run package
