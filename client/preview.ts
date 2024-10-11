@@ -10,7 +10,7 @@ import {
   window,
   workspace,
 } from "vscode";
-import { MemFS } from "./memFs";
+import { MemFS } from "../vendor/vscode-extension-samples/fileSystemProvider";
 
 const PEGGY_INPUT_SCHEME = "peggyin";
 
