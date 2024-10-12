@@ -23,7 +23,7 @@ import {
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 import type { SourceNode } from "source-map-generator";
-import { debounce } from "./debounce";
+import { debounce } from "../common/debounce";
 
 function getSession(
   ast: peggy.ast.Grammar,

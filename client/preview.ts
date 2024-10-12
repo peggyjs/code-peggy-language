@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as peggy from "peggy";
-
+import * as util from "node-inspect-extracted";
 import {
   ExtensionContext,
   OutputChannel,
@@ -11,8 +11,9 @@ import {
   workspace,
 } from "vscode";
 import { MemFS } from "../vendor/vscode-extension-samples/fileSystemProvider";
+import { debounce } from "../common/debounce";
 
-const PEGGY_INPUT_SCHEME = "peggyin";
+const PEGGY_INPUT_SCHEME = "peggyjsin";
 
 interface GrammarConfig {
   name: string;
@@ -29,11 +30,8 @@ async function executeAndDisplayResults(
   output: OutputChannel,
   config: GrammarConfig
 ): Promise<void> {
-  output.clear();
   output.show(true);
-  output.appendLine(
-    `${config.name} ${config.start_rule ? `(${config.start_rule})` : ""}`
-  );
+  let out = `// ${config.name} ${config.start_rule ? `(${config.start_rule})` : ""}\n`;
 
   try {
     const [grammar_document, input_document] = [
@@ -41,21 +39,22 @@ async function executeAndDisplayResults(
       await workspace.openTextDocument(config.input_uri),
     ];
 
+    // Never leave it dirty; it's saved in memory anyway.
+    // Don't bother to wait for the promise.
+    input_document.save();
     const grammar_text = grammar_document.getText();
 
-    config.parser
-      = grammar_text === config.grammar_text
-        ? config.parser
-        : peggy.generate(
-          grammar_text,
-          config.start_rule
-            ? {
-                allowedStartRules: [config.start_rule],
-              }
-            : undefined
-        );
-
-    config.grammar_text = grammar_text;
+    if (grammar_text !== config.grammar_text) {
+      config.parser = peggy.generate(
+        grammar_text,
+        config.start_rule
+          ? {
+              allowedStartRules: [config.start_rule],
+            }
+          : undefined
+      );
+      config.grammar_text = grammar_text;
+    }
 
     const input = input_document.getText();
     const result = config.parser.parse(
@@ -63,29 +62,34 @@ async function executeAndDisplayResults(
       config.start_rule ? { startRule: config.start_rule } : undefined
     );
 
-    output.appendLine(JSON.stringify(result, null, 3));
+    out += util.inspect(result, {
+      depth: Infinity,
+      colors: false,
+      maxArrayLength: Infinity,
+      maxStringLength: Infinity,
+      breakLength: 40,
+      sorted: true,
+    });
+    out += "\n";
   } catch (error) {
-    output.append(error.toString());
+    out += error.toString();
+    out += "\n";
   }
+  // Replace once, since addLine causes issues with trailing spaces.
+  output.replace(out);
 }
 
-function debounceExecution(output: OutputChannel, config: GrammarConfig): void {
-  clearTimeout(config.timeout);
-
-  config.timeout = setTimeout(() => {
-    executeAndDisplayResults(output, config);
-  }, 300);
-}
+const debounceExecution = debounce(executeAndDisplayResults, 300);
 
 export function activate(context: ExtensionContext): void {
-  const peggy_output = window.createOutputChannel("Peggy");
+  const peggy_output = window.createOutputChannel("Peggy Live", "javascript");
   const memory_fs = new MemFS();
   const grammars = new Map<string, GrammarConfig>();
 
   function grammarNameFromUri(uri: Uri): string {
     return path
       .basename(uri.fsPath)
-      .replace(/.(pegjs|peggy)$/, "")
+      .replace(/\.(pegjs|peggy)$/, "")
       .replace(/^[(][^)]+[)]__/, "");
   }
 
@@ -96,12 +100,6 @@ export function activate(context: ExtensionContext): void {
     const grammar_name = grammarNameFromUri(grammar_document_uri);
     const key = `${grammar_name}:${start_rule || "*"}`;
 
-    /*
-    Const base_path = path.dirname(grammar_document_uri.toString());
-    const input_document_uri = start_rule
-      ? Uri.parse(`${base_path}/(${start_rule})__${grammar_name}`)
-      : Uri.parse(`${base_path}/${grammar_name}`);
-    */
     const input_document_uri = start_rule
       ? Uri.parse(`${PEGGY_INPUT_SCHEME}:/(${start_rule})__${grammar_name}`)
       : Uri.parse(`${PEGGY_INPUT_SCHEME}:/${grammar_name}`);
@@ -118,16 +116,15 @@ export function activate(context: ExtensionContext): void {
         });
       });
     }
-
-    grammars.set(key, {
+    const config = {
       name: grammar_name,
       key,
       start_rule,
       grammar_uri: grammar_document_uri,
       input_uri: input_document_uri,
-    });
-
-    return grammars.get(key);
+    };
+    grammars.set(key, config);
+    return config;
   }
 
   const documents_changed = workspace.onDidChangeTextDocument(async e => {
