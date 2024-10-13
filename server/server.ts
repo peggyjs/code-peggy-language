@@ -141,8 +141,9 @@ function addProblemDiagnostics(
 }
 
 const validateTextDocument = debounce((doc: TextDocument): void => {
-  const diagnostics: Diagnostic[] = [];
+  AST.delete(doc.uri); // Cancel any pending and start over.
 
+  const diagnostics: Diagnostic[] = [];
   try {
     const ast = peggy.parser.parse(doc.getText(), {
       grammarSource: doc.uri,
@@ -177,6 +178,7 @@ const validateTextDocument = debounce((doc: TextDocument): void => {
       };
       diagnostics.push(d);
     }
+    AST.set(doc.uri, null);
   }
 
   // Send the computed diagnostics to VS Code.

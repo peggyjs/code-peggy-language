@@ -1,11 +1,12 @@
-export type Notification<K, V> = (key: K, value: V) => void;
+type Notification<K, V> = (key: K, value: V | null) => void;
 
 // Light pub-sub over a map
-export class WatchMap<K, V> extends Map<K, V> {
+export class WatchMap<K, V> extends Map<K, V | null> {
   #pending = new Map<K, Notification<K, V>[]>();
 
-  public set(key: K, value: V): this {
+  public set(key: K, value: V | null): this {
     super.set(key, value);
+
     const watchers = this.#pending.get(key);
     if (watchers) {
       this.#pending.delete(key);
@@ -17,15 +18,17 @@ export class WatchMap<K, V> extends Map<K, V> {
   }
 
   public delete(key: K): boolean {
-    if (super.delete(key)) {
-      // This should never delete anything
+    const watchers = this.#pending.get(key);
+    if (watchers) {
       this.#pending.delete(key);
-      return true;
+      for (const w of watchers) {
+        w.call(this, key, null);
+      }
     }
-    return false;
+    return super.delete(key);
   }
 
-  public waitFor(key: K): Promise<V> {
+  public waitFor(key: K): Promise<V | null> {
     return new Promise(resolve => {
       if (this.has(key)) {
         resolve(this.get(key));
