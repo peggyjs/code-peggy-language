@@ -7,6 +7,7 @@ export default [
   {
     ignores: [
       "out/**",
+      "vendor/**",
     ],
   },
   ...commonjs,

@@ -55,6 +55,14 @@ of all of the rules in the Outline view.
 
 ![Outline](/images/outline.png)
 
+## Live Preview
+
+Live edit and test your Grammars, optionally starting at the rule under cursor.
+
+### Tips
+
+Name your grammar like this for optimal experience: grammar_name.language_extension.peggy. Where language_extension is the extension of the language you're parsing. This will provide syntax highlighting if you have a matching language server installed.
+
 ## Contributing
 
 Feel free to contribute to this extension [here](https://github.com/peggyjs/code-peggy-language).
