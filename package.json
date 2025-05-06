@@ -11,6 +11,7 @@
   },
   "homepage": "https://github.com/peggyjs/code-peggy-language",
   "categories": [
+    "Debuggers",
     "Programming Languages",
     "Snippets"
   ],
@@ -91,6 +92,32 @@
         "language": "peggy",
         "path": "./snippets/snippets.json"
       }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "editor.peggyLive",
+          "group": "3_preview",
+          "when": "editorLangId == peggy"
+        },
+        {
+          "command": "editor.peggyLiveFromRule",
+          "group": "3_preview",
+          "when": "editorLangId == peggy"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "editor.peggyLive",
+        "title": "Peggy Live Preview",
+        "category": "preview"
+      },
+      {
+        "command": "editor.peggyLiveFromRule",
+        "title": "Peggy Live from rule under cursor",
+        "category": "preview"
+      }
     ]
   },
   "scripts": {
@@ -120,6 +147,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "node-inspect-extracted": "3.0.2",
     "peggy": "^4.1.1",
     "source-map-generator": "0.8.0",
     "vscode-languageclient": "^9.0.1",

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      node-inspect-extracted:
+        specifier: 3.0.2
+        version: 3.0.2
       peggy:
         specifier: ^4.1.1
         version: 4.1.1
@@ -1355,6 +1358,10 @@ packages:
 
   node-addon-api@4.3.0:
     resolution: {integrity: sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==}
+
+  node-inspect-extracted@3.0.2:
+    resolution: {integrity: sha512-lOBe4RMfICoYRKZaCXLVoBt6t8wM93QLEIp2WuvPJ5yDTEzrp+LhquGp4RV283Vd5RJ+vUvBmRrGtRu2HCgWHw==}
+    engines: {node: '>=18'}
 
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
@@ -3481,6 +3488,8 @@ snapshots:
 
   node-addon-api@4.3.0:
     optional: true
+
+  node-inspect-extracted@3.0.2: {}
 
   node-releases@2.0.18: {}
 
