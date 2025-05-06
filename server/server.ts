@@ -161,7 +161,7 @@ const validateTextDocument = debounce((doc: TextDocument): void => {
   } catch (error) {
     if (error instanceof peggy.GrammarError) {
       addProblemDiagnostics(error.problems, diagnostics);
-    } else if (error instanceof peggy.parser.SyntaxError) {
+    } else if (error instanceof peggy.parser.PeggySyntaxError) {
       addProblemDiagnostics([["error", error.message, error.location, []]], diagnostics);
     } else {
       connection.console.error("UNEXPECTED ERROR");
