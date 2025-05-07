@@ -134,7 +134,7 @@
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "6.0.0",
-    "@types/node": "22.15.14",
+    "@types/node": "22.15.15",
     "@types/vscode": "^1.99.1",
     "@vscode/vsce": "3.3.2",
     "eslint": "^9.26.0",
@@ -148,7 +148,7 @@
   },
   "dependencies": {
     "node-inspect-extracted": "3.1.0",
-    "peggy": "^5.0.0",
+    "peggy": "^5.0.2",
     "source-map-generator": "2.0.0",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",

@@ -41,7 +41,7 @@ export function activate(context: ExtensionContext): void {
   // Create the language client and start the client.
   client = new LanguageClient(
     "peggyLanguageServer",
-    "Language Server Peggy",
+    "Peggy Language Server",
     serverOptions,
     clientOptions
   );
