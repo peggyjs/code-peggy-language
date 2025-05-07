@@ -41,8 +41,11 @@ const WORD_RE = /[^\s{}[\]()`~!@#%^&*+\-=|\\;:'",./<>?]+/g;
 const PASSES: peggy.compiler.Stages = {
   prepare: peggy.compiler.passes.prepare,
   check: peggy.compiler.passes.check,
-  // Skip all transform steps. See issue #29
-  transform: [],
+  // Skip most transform steps. See issue #29
+  // `inferenceMatchResult` is the last one.  At this point, the function
+  // names are munged, so we can't use them to filter correctly.
+  transform: peggy.compiler.passes.transform.slice(-1),
+  semantic: peggy.compiler.passes.semantic,
   generate: [getSession],
 };
 
