@@ -8,6 +8,7 @@ export default [
     ignores: [
       "out/**",
       "vendor/**",
+      "package-lock.json",
     ],
   },
   ...commonjs,
