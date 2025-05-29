@@ -401,7 +401,7 @@ connection.onDocumentSymbol(
 );
 
 documents.onDidClose(change => {
-  AST.delete(change.document.uri.toString());
+  AST.delete(change.document.uri);
 
   setTimeout(() => {
     connection.sendDiagnostics({
