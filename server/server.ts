@@ -401,7 +401,14 @@ connection.onDocumentSymbol(
 );
 
 documents.onDidClose(change => {
-  AST.delete(change.document.uri.toString());
+  AST.delete(change.document.uri);
+
+  setTimeout(() => {
+    connection.sendDiagnostics({
+      uri: change.document.uri,
+      diagnostics: [],
+    });
+  }, 150);
 });
 
 documents.onDidChangeContent(change => {
