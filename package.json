@@ -134,27 +134,27 @@
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "6.0.0",
-    "@types/node": "22.15.15",
-    "@types/vscode": "^1.99.1",
-    "@vscode/vsce": "3.3.2",
-    "eslint": "^9.26.0",
-    "eslint-plugin-mocha": "11.0.0",
+    "@types/node": "22.15.29",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "3.4.2",
+    "eslint": "^9.28.0",
+    "eslint-plugin-mocha": "11.1.0",
     "rimraf": "^6.0.1",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "8.32.0",
-    "webpack": "^5.99.8",
+    "typescript-eslint": "8.33.0",
+    "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "node-inspect-extracted": "3.1.0",
-    "peggy": "^5.0.2",
+    "peggy": "^5.0.3",
     "source-map-generator": "2.0.0",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12"
   },
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.11.0",
   "engines": {
     "vscode": ">=1.99.3"
   }
