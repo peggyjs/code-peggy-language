@@ -156,6 +156,6 @@
   },
   "packageManager": "pnpm@10.11.0",
   "engines": {
-    "vscode": ">=1.99.3"
+    "vscode": ">=1.100.2"
   }
 }
