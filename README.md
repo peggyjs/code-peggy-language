@@ -59,6 +59,57 @@ of all of the rules in the Outline view.
 
 Live edit and test your Grammars, optionally starting at the rule under cursor.
 
+## Problem Matchers
+
+Report problems of your code in the Problems view when `peggy` is run in a task.
+The extension provides two problem matchers: `$peggy` and `$peggy-watch`.
+
+Configure them like the following in your `.vscode/tasks.json`:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: compile (peggy)",
+      "type": "npm",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "script": "compile",
+      "problemMatcher": "$peggy"
+    },
+    {
+      "label": "npm: watch (peggy)",
+      "type": "npm",
+      "group": "build",
+      "script": "watch",
+      "isBackground": true,
+      "problemMatcher": "$peggy-watch"
+    }
+  ]
+}
+```
+
+and in your `package.json`:
+
+```json
+{
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "peggy grammar.peggy",
+    "watch": "peggy --watch grammar.peggy"
+  },
+  "devDependencies": {
+    "peggy": "^5.0.3"
+  }
+}
+```
+
+Then you can compile your grammar via the command palette with "Tasks: Run Task".
+See [Task / VS Code Extension API](https://code.visualstudio.com/docs/debugtest/tasks) for more details.
+
 ### Tips
 
 Name your grammar like this for optimal experience: grammar_name.language_extension.peggy. Where language_extension is the extension of the language you're parsing. This will provide syntax highlighting if you have a matching language server installed.
