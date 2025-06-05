@@ -33,6 +33,7 @@ export function activate(context: ExtensionContext): void {
   const clientOptions: LanguageClientOptions = {
     // Register the server for plain text documents
     documentSelector: [{ language: "peggy" }],
+    diagnosticCollectionName: "peggy",
     synchronize: {
       configurationSection: "peggyLanguageServer",
     },

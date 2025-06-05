@@ -118,6 +118,39 @@
         "title": "Peggy Live from rule under cursor",
         "category": "preview"
       }
+    ],
+    "problemMatchers": [
+      {
+        "name": "peggy",
+        "label": "peggy check problems",
+        "owner": "peggy",
+        "source": "peggy-language",
+        "applyTo": "closedDocuments",
+        "fileLocation": "autoDetect",
+        "pattern": [
+          {
+            "regexp": "^(Error|error|warning|info)\\S*: (.*)$",
+            "severity": 1,
+            "message": 2
+          },
+          {
+            "regexp": "^ --> ([^:]+):(\\d+):(\\d+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3
+          }
+        ]
+      },
+      {
+        "name": "peggy-watch",
+        "base": "$peggy",
+        "label": "peggy check watch problems",
+        "background": {
+          "activeOnStart": false,
+          "beginsPattern": "^\"(.+)\" changed...$",
+          "endsPattern": "^(Wrote|Failed writing): (\".+\")$"
+        }
+      }
     ]
   },
   "scripts": {
