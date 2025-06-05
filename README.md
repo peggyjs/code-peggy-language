@@ -97,7 +97,6 @@ and in your `package.json`:
 ```json
 {
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "peggy grammar.peggy",
     "watch": "peggy --watch grammar.peggy"
   },
