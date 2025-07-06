@@ -23,9 +23,9 @@
 			]
 		},
 		{
-			"label": "watch",
+			"label": "watch:webpack",
 			"type": "npm",
-			"script": "watch:tsc",
+			"script": "watch:webpack",
 			"isBackground": true,
 			"group": {
 				"kind": "build",
@@ -36,8 +36,33 @@
 				"reveal": "never"
 			},
 			"problemMatcher": [
+				"$ts-webpack-watch"
+			]
+		},
+		{
+			"label": "watch:tsc-no-emit",
+			"type": "npm",
+			"script": "watch:tsc-no-emit",
+			"isBackground": true,
+			"group": "build",
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
 				"$tsc-watch"
 			]
+		},
+		{
+			"label": "watch",
+			"dependsOn": [
+				"watch:tsc-no-emit",
+				"watch:webpack"
+			],
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": "build"
 		}
 	]
 }

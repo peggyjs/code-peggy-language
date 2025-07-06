@@ -163,6 +163,8 @@
     "build": "npm run webpack",
     "watch:webpack": "webpack watch --mode development",
     "watch:tsc": "tsc -b -w",
+    "compile:tsc-no-emit": "tsc --noEmit --project tsconfig.json",
+    "watch:tsc-no-emit": "tsc --watch --noEmit --project tsconfig.json",
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
