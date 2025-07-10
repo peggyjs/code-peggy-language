@@ -163,11 +163,13 @@
     "build": "npm run webpack",
     "watch:webpack": "webpack watch --mode development",
     "watch:tsc": "tsc -b -w",
+    "compile:tsc-no-emit": "tsc --noEmit --project tsconfig.json",
+    "watch:tsc-no-emit": "tsc --watch --noEmit --project tsconfig.json",
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "6.0.3",
-    "@types/node": "24.0.10",
+    "@types/node": "^22.16.0",
     "@types/vscode": "^1.101.0",
     "@vscode/vsce": "3.6.0",
     "eslint": "^9.30.1",
