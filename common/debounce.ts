@@ -8,10 +8,13 @@ export function debounce<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout = undefined;
 
-  return (...args: Parameters<T>) => {
+  return (...args: Parameters<T>): void => {
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(() => fn(...args), wait);
+    timeout = setTimeout(() => {
+      timeout = undefined;
+      fn(...args);
+    }, wait);
   };
 }
