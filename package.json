@@ -183,7 +183,6 @@
   },
   "dependencies": {
     "@peggyjs/from-mem": "3.0.2",
-    "node-inspect-extracted": "3.1.0",
     "peggy": "^5.0.5",
     "source-map-generator": "2.0.1",
     "vscode-languageclient": "^9.0.1",
