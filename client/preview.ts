@@ -1,6 +1,6 @@
+import * as fromMem from "@peggyjs/from-mem";
 import * as path from "path";
 import * as peggy from "peggy";
-import * as util from "node-inspect-extracted";
 import {
   ExtensionContext,
   OutputChannel,
@@ -12,6 +12,7 @@ import {
 } from "vscode";
 import { MemFS } from "../vendor/vscode-extension-samples/fileSystemProvider";
 import { debounce } from "../common/debounce";
+import { fileURLToPath } from "url";
 
 const PEGGY_INPUT_SCHEME = "peggyjsin";
 
@@ -22,8 +23,6 @@ interface GrammarConfig {
   grammar_uri: Uri;
   input_uri: Uri;
   timeout?: NodeJS.Timeout;
-  grammar_text?: string;
-  parser?: any;
 }
 
 async function executeAndDisplayResults(
@@ -31,51 +30,91 @@ async function executeAndDisplayResults(
   config: GrammarConfig
 ): Promise<void> {
   output.show(true);
-  let out = `// ${config.name} ${config.start_rule ? `(${config.start_rule})` : ""}\n`;
+  let out = `// ${config.name}${config.start_rule ? ` (${config.start_rule})` : ""}\n`;
+
+  const [grammar_document, input_document] = [
+    await workspace.openTextDocument(config.grammar_uri),
+    await workspace.openTextDocument(config.input_uri),
+  ];
+
+  // Never leave it dirty; it's saved in memory anyway.
+  // Don't bother to wait for the promise.
+  input_document.save();
+  const input = input_document.getText();
+  const filename = fileURLToPath(grammar_document.uri.toString());
 
   try {
-    const [grammar_document, input_document] = [
-      await workspace.openTextDocument(config.grammar_uri),
-      await workspace.openTextDocument(config.input_uri),
-    ];
-
-    // Never leave it dirty; it's saved in memory anyway.
-    // Don't bother to wait for the promise.
-    input_document.save();
     const grammar_text = grammar_document.getText();
 
-    if (grammar_text !== config.grammar_text) {
-      config.parser = peggy.generate(
-        grammar_text,
-        config.start_rule
-          ? {
-              allowedStartRules: [config.start_rule],
-            }
-          : undefined
-      );
-      config.grammar_text = grammar_text;
+    const format = await fromMem.guessModuleType(filename);
+    const pbo: peggy.SourceBuildOptions<"source"> = {
+      output: "source",
+      format,
+    };
+    if (config.start_rule) {
+      pbo.allowedStartRules = [config.start_rule];
+    }
+    const parserSource = peggy.generate(grammar_text, pbo);
+
+    const consoleOutput: fromMem.ConsoleOutErr = {};
+    const parseOpts: PEG.ParserOptions = {
+      grammarSource: config.name,
+    };
+    if (config.start_rule) {
+      parseOpts.startRule = config.start_rule;
     }
 
-    const input = input_document.getText();
-    const result = config.parser.parse(
-      input,
-      config.start_rule ? { startRule: config.start_rule } : undefined
-    );
-
-    out += util.inspect(result, {
-      depth: Infinity,
-      colors: false,
-      maxArrayLength: Infinity,
-      maxStringLength: Infinity,
-      breakLength: 40,
-      sorted: true,
+    const result = await fromMem(parserSource, {
+      filename,
+      format,
+      consoleOutput,
+      exec: `
+        const util = await import("node:util");
+        try {
+          const res = IMPORTED.parse(...arg);
+          return util.inspect(res, {
+            depth: Infinity,
+            colors: false,
+            maxArrayLength: Infinity,
+            maxStringLength: Infinity,
+            breakLength: 40,
+            sorted: true,
+          });
+        } catch (er) {
+          if (typeof er.format === "function") {
+            er.message = er.format([{
+              source: arg[1].grammarSource,
+              text: arg[0],
+            }]);
+          }
+          throw er;
+        }
+      `,
+      arg: [input, parseOpts],
+      colorMode: false,
     });
+
+    consoleOutput.capture?.();
+    if (consoleOutput.out) {
+      consoleOutput.out = consoleOutput.out.trimEnd();
+      out += "\n" + consoleOutput.out.replace(/^/gm, "// stdout: ") + "\n";
+    }
+    if (consoleOutput.err) {
+      consoleOutput.err = consoleOutput.err.trimEnd();
+      out += "\n" + consoleOutput.err.replace(/^/gm, "// stderr: ") + "\n";
+    }
     out += "\n";
-  } catch (error) {
+    out += result;
+    out += "\n";
+  } catch(error) {
     out += error.toString();
+  }
+  if (!out.endsWith("\n")) {
     out += "\n";
   }
-  // Replace once, since addLine causes issues with trailing spaces.
+
+  // Replace once.  Causes trailing spaces to be deleted in input doc,
+  // seemingly.
   output.replace(out);
 }
 
@@ -93,10 +132,10 @@ export function activate(context: ExtensionContext): void {
       .replace(/^[(][^)]+[)]__/, "");
   }
 
-  function trackGrammar(
+  async function trackGrammar(
     grammar_document_uri: Uri,
     start_rule?: string
-  ): GrammarConfig {
+  ): Promise<GrammarConfig> {
     const grammar_name = grammarNameFromUri(grammar_document_uri);
     const key = `${grammar_name}:${start_rule || "*"}`;
 
@@ -109,11 +148,10 @@ export function activate(context: ExtensionContext): void {
     );
 
     if (!is_input_document_open) {
-      workspace.fs.writeFile(input_document_uri, Buffer.from("")).then(() => {
-        window.showTextDocument(input_document_uri, {
-          viewColumn: ViewColumn.Beside,
-          preserveFocus: true,
-        });
+      await workspace.fs.writeFile(input_document_uri, Buffer.from(""));
+      await window.showTextDocument(input_document_uri, {
+        viewColumn: ViewColumn.Beside,
+        preserveFocus: false,
       });
     }
     const config = {
@@ -135,7 +173,7 @@ export function activate(context: ExtensionContext): void {
         config.grammar_uri.toString() === document_uri_string
         || config.input_uri.toString() === document_uri_string
       ) {
-        await executeAndDisplayResults(peggy_output, config);
+        debounceExecution(peggy_output, config);
       }
     }
   });
@@ -154,19 +192,22 @@ export function activate(context: ExtensionContext): void {
     documents_changed,
     documents_closed,
     peggy_output,
-    commands.registerTextEditorCommand("editor.peggyLive", editor => {
-      const grammar_config = trackGrammar(editor.document.uri);
+    commands.registerTextEditorCommand("editor.peggyLive", async editor => {
+      const grammar_config = await trackGrammar(editor.document.uri);
       debounceExecution(peggy_output, grammar_config);
     }),
-    commands.registerTextEditorCommand("editor.peggyLiveFromRule", editor => {
+    commands.registerTextEditorCommand("editor.peggyLiveFromRule", async editor => {
       const word_range = editor.document.getWordRangeAtPosition(
         editor.selection.start,
-        /[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*/
+        /[\p{ID_Start}][\p{ID_Continue}]*/u
       );
 
       if (word_range !== null) {
         const rule_name = editor.document.getText(word_range);
-        const grammar_config = trackGrammar(editor.document.uri, rule_name);
+        const grammar_config = await trackGrammar(
+          editor.document.uri,
+          rule_name
+        );
 
         debounceExecution(peggy_output, grammar_config);
       }

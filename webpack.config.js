@@ -9,6 +9,9 @@
 
 const path = require("path");
 
+/**
+ * @type {import('webpack').Configuration}
+ */
 module.exports = {
   context: __dirname,
   mode: "none", // This leaves the source code as close as possible to the original (when packaging we set this to 'production')
@@ -45,9 +48,10 @@ module.exports = {
   entry: {
     "server": "./server/server.ts",
     "client": "./client/index.ts",
+    "child": "./node_modules/@peggyjs/from-mem/lib/child.js",
   },
   output: {
-    filename: "[name]/[name].js",
+    filename: "[name].js",
     path: path.join(__dirname, "out"),
     libraryTarget: "commonjs",
   },

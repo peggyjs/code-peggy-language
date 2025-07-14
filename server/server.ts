@@ -161,7 +161,7 @@ const validateTextDocument = debounce((doc: TextDocument): void => {
     ) as unknown as peggy.Session;
     addProblemDiagnostics(session.problems, diagnostics);
     AST.set(doc.uri, ast);
-  } catch (error) {
+  } catch(error) {
     if (error instanceof peggy.GrammarError) {
       addProblemDiagnostics(error.problems, diagnostics);
     } else if (error instanceof peggy.parser.SyntaxError) {
