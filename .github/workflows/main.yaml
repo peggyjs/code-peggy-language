@@ -14,13 +14,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
+      - uses: pnpm/action-setup@v4
 
       - name: Install
-        run: npm install
+        run: pnpm install
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Package
-        run: npm run package
+        run: pnpm run package
