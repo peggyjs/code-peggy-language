@@ -1,6 +1,7 @@
 .github/
 .gitignore
 .vscode/**
+.vscode-test/**
 **/*.map
 **/*.ts
 **/*.vsix
