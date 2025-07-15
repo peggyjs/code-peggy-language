@@ -5,7 +5,8 @@
 **/*.ts
 **/*.vsix
 **/*webpack.config.js
-**/out/test/**
+esbuild.js
+**/out/**
 **/src/**
 **/test/**
 **/tsconfig.json

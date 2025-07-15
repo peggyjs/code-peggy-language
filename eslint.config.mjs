@@ -7,8 +7,10 @@ export default [
   {
     ignores: [
       "out/**",
+      "dist/**",
       "vendor/**",
       "package-lock.json",
+      "esbuild.js",
     ],
   },
   ...commonjs,

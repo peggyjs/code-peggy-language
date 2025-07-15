@@ -23,7 +23,7 @@
     "type": "git",
     "url": "https://github.com/peggyjs/code-peggy-language"
   },
-  "main": "./out/client",
+  "main": "./dist/client",
   "contributes": {
     "configuration": {
       "title": "Peggy Language",
@@ -155,31 +155,28 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "clean": "rimraf ./out",
-    "vscode:prepublish": "pnpm run webpack",
-    "webpack": "pnpm run clean && webpack --mode production",
-    "webpack:dev": "pnpm run clean && webpack --mode none",
-    "prebuild": "pnpm run lint",
-    "build": "pnpm run webpack",
-    "watch:webpack": "webpack watch --mode development",
-    "watch:tsc": "tsc -b -w",
-    "compile:tsc-no-emit": "tsc --noEmit --project tsconfig.json",
-    "watch:tsc-no-emit": "tsc --watch --noEmit --project tsconfig.json",
+    "clean": "rimraf ./out ./dist",
+    "vscode:prepublish": "pnpm run clean && pnpm run compile:production",
+    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "compile:production": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --watch --noEmit --project tsconfig.json",
+    "check-types": "tsc --noEmit",
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
     "@peggyjs/eslint-config": "6.0.4",
-    "@types/node": "^24.0.13",
+    "@types/node": "22.x",
     "@types/vscode": "^1.102.0",
     "@vscode/vsce": "3.6.0",
+    "esbuild": "^0.25.6",
     "eslint": "^9.31.0",
     "eslint-plugin-mocha": "11.1.0",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
-    "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "8.36.0",
-    "webpack": "^5.100.1",
-    "webpack-cli": "^6.0.1"
+    "typescript-eslint": "8.36.0"
   },
   "dependencies": {
     "@peggyjs/from-mem": "3.0.2",
