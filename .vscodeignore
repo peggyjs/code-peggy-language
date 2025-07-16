@@ -4,6 +4,7 @@
 .vscode-test/**
 **/*.map
 **/*.ts
+**/.vscode-test.*
 **/*.vsix
 **/*webpack.config.js
 esbuild.js
