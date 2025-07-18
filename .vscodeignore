@@ -1,11 +1,14 @@
 .github/
 .gitignore
 .vscode/**
+.vscode-test/**
 **/*.map
 **/*.ts
+**/.vscode-test.*
 **/*.vsix
 **/*webpack.config.js
-**/out/test/**
+esbuild.js
+**/out/**
 **/src/**
 **/test/**
 **/tsconfig.json
@@ -14,4 +17,5 @@ eslint.config.mjs
 images/*.svg
 node_modules/**
 pnpm-lock.yaml
+pnpm-workspace.yaml
 PUBLISHING

@@ -23,46 +23,42 @@
 			]
 		},
 		{
-			"label": "watch:webpack",
+			"label": "npm: watch:esbuild",
 			"type": "npm",
-			"script": "watch:webpack",
-			"isBackground": true,
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"presentation": {
-				"panel": "dedicated",
-				"reveal": "never"
-			},
-			"problemMatcher": [
-				"$ts-webpack-watch"
-			]
-		},
-		{
-			"label": "watch:tsc-no-emit",
-			"type": "npm",
-			"script": "watch:tsc-no-emit",
+			"script": "watch:esbuild",
 			"isBackground": true,
 			"group": "build",
 			"presentation": {
-				"panel": "dedicated",
+				"group": "watch",
 				"reveal": "never"
 			},
-			"problemMatcher": [
-				"$tsc-watch"
-			]
+			"problemMatcher": "$esbuild-watch"
+		},
+		{
+			"label": "npm: watch:tsc",
+			"type": "npm",
+			"script": "watch:tsc",
+			"isBackground": true,
+			"group": "build",
+			"presentation": {
+				"group": "watch",
+				"reveal": "never"
+			},
+			"problemMatcher": "$tsc-watch"
 		},
 		{
 			"label": "watch",
 			"dependsOn": [
-				"watch:tsc-no-emit",
-				"watch:webpack"
+				"npm: watch:tsc",
+				"npm: watch:esbuild"
 			],
 			"presentation": {
 				"reveal": "never"
 			},
-			"group": "build"
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
 		}
 	]
 }

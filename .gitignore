@@ -1,5 +1,7 @@
 *.vsix
 /node_modules
 out/
+dist/
+.vscode-test/
 PUBLISHING
 tsconfig.tsbuildinfo

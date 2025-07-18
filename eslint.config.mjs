@@ -7,8 +7,13 @@ export default [
   {
     ignores: [
       "out/**",
+      "dist/**",
       "vendor/**",
       "package-lock.json",
+      "esbuild.js",
+      "test/*.test.ts",
+      ".vscode-test.mjs",
+      ".vscode-test/**",
     ],
   },
   ...commonjs,
