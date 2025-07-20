@@ -10,7 +10,9 @@
     "noImplicitAny": true,
 
     "rootDir": ".",
-    "outDir": "out"
+    "outDir": "out",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
   },
   "include": [
     "client",

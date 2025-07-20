@@ -1,4 +1,3 @@
-import * as fromMem from "@peggyjs/from-mem";
 import * as path from "path";
 import * as peggy from "peggy";
 import {
@@ -13,6 +12,7 @@ import {
 import { MemFS } from "../vendor/vscode-extension-samples/fileSystemProvider";
 import { debounce } from "../common/debounce";
 import { fileURLToPath } from "url";
+import fromMem from "@peggyjs/from-mem";
 
 const PEGGY_INPUT_SCHEME = "peggyjsin";
 
@@ -106,7 +106,7 @@ async function executeAndDisplayResults(
     out += "\n";
     out += result;
     out += "\n";
-  } catch(error) {
+  } catch (error) {
     out += error.toString();
   }
   if (!out.endsWith("\n")) {
