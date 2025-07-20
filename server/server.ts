@@ -161,7 +161,7 @@ const validateTextDocument = debounce((doc: TextDocument): void => {
     ) as unknown as peggy.Session;
     addProblemDiagnostics(session.problems, diagnostics);
     AST.set(doc.uri, ast);
-  } catch(error) {
+  } catch (error) {
     if (error instanceof peggy.GrammarError) {
       addProblemDiagnostics(error.problems, diagnostics);
     } else if (error instanceof peggy.parser.SyntaxError) {
@@ -223,7 +223,7 @@ function ruleNameRange(name: string, ruleRange: Range): Range {
 }
 
 connection.onCompletion(
-  async(pos: TextDocumentPositionParams): Promise<CompletionItem[]> => {
+  async (pos: TextDocumentPositionParams): Promise<CompletionItem[]> => {
     const docAST = await AST.waitFor(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -246,7 +246,7 @@ connection.onCompletion(
 );
 
 connection.onDefinition(
-  async(pos: TextDocumentPositionParams): Promise<LocationLink[]> => {
+  async (pos: TextDocumentPositionParams): Promise<LocationLink[]> => {
     const docAST = await AST.waitFor(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -278,7 +278,7 @@ connection.onDefinition(
 );
 
 connection.onReferences(
-  async(pos: TextDocumentPositionParams): Promise<Location[]> => {
+  async (pos: TextDocumentPositionParams): Promise<Location[]> => {
     const docAST = await AST.get(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -308,7 +308,7 @@ connection.onReferences(
 );
 
 connection.onRenameRequest(
-  async(pos: RenameParams): Promise<WorkspaceEdit> => {
+  async (pos: RenameParams): Promise<WorkspaceEdit> => {
     const docAST = await AST.get(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -355,7 +355,7 @@ connection.onRenameRequest(
 );
 
 connection.onDocumentSymbol(
-  async(pos: DocumentSymbolParams): Promise<DocumentSymbol[]> => {
+  async (pos: DocumentSymbolParams): Promise<DocumentSymbol[]> => {
     const docAST = await AST.waitFor(pos.textDocument.uri);
     if (!docAST) {
       return null;
