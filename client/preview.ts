@@ -3,6 +3,8 @@ import * as peggy from "peggy";
 import {
   ExtensionContext,
   OutputChannel,
+  Tab,
+  TabInputText,
   Uri,
   ViewColumn,
   commands,
@@ -10,7 +12,7 @@ import {
   workspace,
 } from "vscode";
 import { MemFS } from "../vendor/vscode-extension-samples/fileSystemProvider";
-import { debounce } from "../common/debounce";
+import { debouncePromise } from "../common/debounce";
 import { fileURLToPath } from "url";
 import fromMem from "@peggyjs/from-mem";
 
@@ -25,10 +27,21 @@ interface GrammarConfig {
   timeout?: NodeJS.Timeout;
 }
 
+function allTabs(): Map<string, Tab> {
+  return new Map(window.tabGroups.all
+    .map(tg => tg.tabs)
+    .flat()
+    .filter(t => t.input instanceof TabInputText)
+    .map((t: Tab) => [
+      (t.input as TabInputText).uri.toString(),
+      t,
+    ]));
+}
+
 async function executeAndDisplayResults(
   output: OutputChannel,
   config: GrammarConfig
-): Promise<void> {
+): Promise<string> {
   output.show(true);
   let out = `// ${config.name}${config.start_rule ? ` (${config.start_rule})` : ""}\n`;
 
@@ -41,6 +54,8 @@ async function executeAndDisplayResults(
   // Don't bother to wait for the promise.
   input_document.save();
   const input = input_document.getText();
+  const fs = await import("node:fs");
+  fs.writeFileSync("/tmp/u.txt", JSON.stringify(config));
   const filename = fileURLToPath(grammar_document.uri.toString());
 
   try {
@@ -116,9 +131,10 @@ async function executeAndDisplayResults(
   // Replace once.  Causes trailing spaces to be deleted in input doc,
   // seemingly.
   output.replace(out);
+  return out;
 }
 
-const debounceExecution = debounce(executeAndDisplayResults, 300);
+const debounceExecution = debouncePromise(executeAndDisplayResults, 300);
 
 export function activate(context: ExtensionContext): void {
   const peggy_output = window.createOutputChannel("Peggy Live", "javascript");
@@ -143,17 +159,18 @@ export function activate(context: ExtensionContext): void {
       ? Uri.parse(`${PEGGY_INPUT_SCHEME}:/(${start_rule})__${grammar_name}`)
       : Uri.parse(`${PEGGY_INPUT_SCHEME}:/${grammar_name}`);
 
-    const is_input_document_open = workspace.textDocuments.find(
-      d => d.uri === input_document_uri
+    const is_input_document_open = workspace.textDocuments.some(
+      d => d.uri.toString() === input_document_uri.toString()
     );
 
     if (!is_input_document_open) {
       await workspace.fs.writeFile(input_document_uri, Buffer.from(""));
-      await window.showTextDocument(input_document_uri, {
-        viewColumn: ViewColumn.Beside,
-        preserveFocus: false,
-      });
     }
+    await window.showTextDocument(input_document_uri, {
+      viewColumn: ViewColumn.Beside,
+      preserveFocus: false,
+    });
+
     const config = {
       name: grammar_name,
       key,
@@ -168,33 +185,57 @@ export function activate(context: ExtensionContext): void {
   const documents_changed = workspace.onDidChangeTextDocument(async e => {
     const document_uri_string = e.document.uri.toString();
 
+    const p: Promise<any>[] = [];
     for (const config of grammars.values()) {
       if (
         config.grammar_uri.toString() === document_uri_string
         || config.input_uri.toString() === document_uri_string
       ) {
-        debounceExecution(peggy_output, config);
+        p.push(debounceExecution(peggy_output, config));
       }
+    }
+    await Promise.all(p);
+  });
+
+  const visibleChanged = window.onDidChangeVisibleTextEditors(async () => {
+    const tabs = allTabs();
+
+    // If we closed the grammar file, close all associated input files.
+    const closedGrammars = [...grammars.values()]
+      .filter(g => !tabs.has(g.grammar_uri.toString()));
+
+    for (const r of closedGrammars) {
+      // If the grammar was removed, remove all of the associated inputs.
+      const t = tabs.get(r.input_uri.toString());
+      if (t) {
+        // From: https://stackoverflow.com/a/75192905/8388
+        window.tabGroups.close(t);
+      }
+      grammars.delete(r.key);
+    }
+
+    // If we closed an input file, just remove it from grammars.
+    const closedInputs = [...grammars.values()]
+      .filter(g => !tabs.has(g.input_uri.toString()));
+    for (const r of closedInputs) {
+      grammars.delete(r.key);
+    }
+
+    if (grammars.size === 0) {
+      peggy_output.hide();
     }
   });
 
-  const documents_closed = workspace.onDidCloseTextDocument(e => {
-    const to_remove = [...grammars.values()].filter(
-      config => config.grammar_uri === e.uri || config.input_uri === e.uri
-    );
-
-    to_remove.forEach(config => {
-      grammars.delete(config.key);
-    });
-  });
-
   context.subscriptions.push(
+    visibleChanged,
     documents_changed,
-    documents_closed,
     peggy_output,
     commands.registerTextEditorCommand("editor.peggyLive", async editor => {
+      if (editor.document.languageId !== "peggy") {
+        console.error(`Invalid document: ${editor.document.uri.toString()}`);
+      }
       const grammar_config = await trackGrammar(editor.document.uri);
-      debounceExecution(peggy_output, grammar_config);
+      return debounceExecution(peggy_output, grammar_config);
     }),
     commands.registerTextEditorCommand("editor.peggyLiveFromRule", async editor => {
       const word_range = editor.document.getWordRangeAtPosition(
@@ -209,8 +250,10 @@ export function activate(context: ExtensionContext): void {
           rule_name
         );
 
-        debounceExecution(peggy_output, grammar_config);
+        return debounceExecution(peggy_output, grammar_config);
       }
+
+      return null;
     })
   );
   workspace.registerFileSystemProvider(PEGGY_INPUT_SCHEME, memory_fs);

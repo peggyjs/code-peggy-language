@@ -20,8 +20,33 @@ jobs:
       - name: Install
         run: pnpm install
 
-      - name: Lint
-        run: pnpm run lint
+      - name: Install XVFB for testing with VS Code
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install --fix-missing xvfb
+
+      - name: Find VS Code stable release version
+        id: code-stable
+        run: |
+          echo "VSCODE_VERSION=`curl --silent https://update.code.visualstudio.com/api/releases/stable | jq -r '.[0]'`" >> "$GITHUB_OUTPUT"
+
+      - name: Cache VS Code download
+        uses: actions/cache@v4
+        with:
+          path: |
+            .vscode-test
+          key: vscode-test-cache-${{ steps.code-stable.outputs.VSCODE_VERSION }}
+
+      - name: Test using VS Code
+        # commands before `xvfb-run -a npm run test` avoid these ERROR messages:
+        # - Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+        # - Exiting GPU process due to errors during initialization
+        run: |
+          export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+          dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS --nofork --nopidfile --syslog-only &
+          mkdir ~/.vscode && echo '{ "disable-hardware-acceleration": true }' > ~/.vscode/argv.json
+          xvfb-run -a npm run test
 
       - name: Package
         run: pnpm run package
