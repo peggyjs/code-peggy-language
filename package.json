@@ -38,6 +38,11 @@
           "description": "Mark all diagnostics, even merely informative ones",
           "type": "boolean",
           "default": true
+        },
+        "peggyLanguageServer.debounceMS": {
+          "description": "Time, in milliseconds, to debounce typing",
+          "type": "integer",
+          "default": 200
         }
       }
     },
@@ -155,7 +160,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "clean": "rimraf ./out ./dist",
+    "clean": "rimraf ./out ./dist ./coverage",
     "vscode:prepublish": "pnpm run clean && pnpm run compile:production",
     "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
     "compile:production": "pnpm run check-types && pnpm run lint && node esbuild.js --production",

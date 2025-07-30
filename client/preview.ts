@@ -17,6 +17,7 @@ import { fileURLToPath } from "url";
 import fromMem from "@peggyjs/from-mem";
 
 const PEGGY_INPUT_SCHEME = "peggyjsin";
+const ID = "peggyLanguageServer";
 
 interface GrammarConfig {
   name: string;
@@ -226,10 +227,18 @@ export function activate(context: ExtensionContext): void {
     }
   });
 
+  const configChanged = workspace.onDidChangeConfiguration(e => {
+    if (e.affectsConfiguration(ID)) {
+      debounceExecution.wait = workspace.getConfiguration(ID).get("debounceMS");
+    }
+  });
+  debounceExecution.wait = workspace.getConfiguration(ID).get("debounceMS");
+
   context.subscriptions.push(
-    visibleChanged,
+    configChanged,
     documents_changed,
     peggy_output,
+    visibleChanged,
     commands.registerTextEditorCommand("editor.peggyLive", async editor => {
       if (editor.document.languageId !== "peggy") {
         console.error(`Invalid document: ${editor.document.uri.toString()}`);
