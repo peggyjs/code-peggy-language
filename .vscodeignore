@@ -19,3 +19,5 @@ node_modules/**
 pnpm-lock.yaml
 pnpm-workspace.yaml
 PUBLISHING
+coverage/
+vendor/
