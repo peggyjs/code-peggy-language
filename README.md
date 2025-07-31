@@ -17,6 +17,14 @@ See the [Marketplace](https://marketplace.visualstudio.com/items?itemName=PeggyJ
   merely informative ones.  Some grammar compiler passes will give informative
   messages about optimizations.  Those may be more annoying to you than
   helpful, depending on your approach to grammar writing.
+- `peggyLanguageServer.debounceMS` [default: *200*] Amount of time to wait
+  after a file has changed before running.  Longer times use less CPU but are
+  less responsive.
+- `peggyLanguageServer.filePattern` [default: *%s/%s.js*] Convert a grammar
+  name to a JS file to output, using this first `%s` as the directory and the
+  second `%s` as the unsuffixed name of the grammar.  This is useful in a per-
+  workspace configuration file so that `import` and `require` work from the
+  correct output directory.
 
 ## Syntax Highlighting
 
@@ -58,6 +66,10 @@ of all of the rules in the Outline view.
 ## Live Preview
 
 Live edit and test your Grammars, optionally starting at the rule under cursor.
+
+![Live Preview Menu](/images/LivePreviewMenu.png)
+
+![Live Preview](/images/LivePreview.png)
 
 ## Problem Matchers
 

@@ -3,8 +3,10 @@ import * as peggy from "peggy";
 import {
   ExtensionContext,
   OutputChannel,
+  Selection,
   Tab,
   TabInputText,
+  TextEditorRevealType,
   Uri,
   ViewColumn,
   commands,
@@ -13,11 +15,12 @@ import {
 } from "vscode";
 import { MemFS } from "../vendor/vscode-extension-samples/fileSystemProvider";
 import { debouncePromise } from "../common/debounce";
-import { fileURLToPath } from "url";
 import fromMem from "@peggyjs/from-mem";
+import { format as uformat } from "node:util";
 
 const PEGGY_INPUT_SCHEME = "peggyjsin";
 const ID = "peggyLanguageServer";
+let filePattern = "%s/%s.js";
 
 interface GrammarConfig {
   name: string;
@@ -57,7 +60,12 @@ async function executeAndDisplayResults(
   const input = input_document.getText();
   const fs = await import("node:fs");
   fs.writeFileSync("/tmp/u.txt", JSON.stringify(config));
-  const filename = fileURLToPath(grammar_document.uri.toString());
+  const parsedFilename = path.parse(grammar_document.uri.fsPath);
+  const filename = path.resolve(uformat(
+    filePattern,
+    parsedFilename.dir,
+    parsedFilename.name
+  ));
 
   try {
     const grammar_text = grammar_document.getText();
@@ -227,12 +235,16 @@ export function activate(context: ExtensionContext): void {
     }
   });
 
+  const initialConfig = workspace.getConfiguration(ID);
+  debounceExecution.wait = initialConfig.get("debounceMS");
+  filePattern = initialConfig.get("filePattern");
   const configChanged = workspace.onDidChangeConfiguration(e => {
     if (e.affectsConfiguration(ID)) {
-      debounceExecution.wait = workspace.getConfiguration(ID).get("debounceMS");
+      const config = workspace.getConfiguration(ID);
+      debounceExecution.wait = config.get("debounceMS");
+      filePattern = config.get("filePattern");
     }
   });
-  debounceExecution.wait = workspace.getConfiguration(ID).get("debounceMS");
 
   context.subscriptions.push(
     configChanged,
@@ -253,13 +265,19 @@ export function activate(context: ExtensionContext): void {
       );
 
       if (word_range !== null) {
+        editor.selection = new Selection(word_range.start, word_range.end);
         const rule_name = editor.document.getText(word_range);
         const grammar_config = await trackGrammar(
           editor.document.uri,
           rule_name
         );
 
-        return debounceExecution(peggy_output, grammar_config);
+        return debounceExecution(peggy_output, grammar_config).then(() => {
+          editor.revealRange(
+            word_range,
+            TextEditorRevealType.InCenterIfOutsideViewport
+          );
+        });
       }
 
       return null;
