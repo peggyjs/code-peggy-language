@@ -2,7 +2,7 @@
   "name": "peggy-language",
   "displayName": "Peggy Language",
   "description": "Syntax highlighting and error reporting for Peggy",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "license": "MIT",
   "publisher": "PeggyJS",
   "author": {
@@ -45,7 +45,7 @@
           "default": 200,
           "minimum": 0
         },
-         "peggyLanguageServer.filePattern": {
+        "peggyLanguageServer.filePattern": {
           "markdownDescription": "Convert a grammar name to a JS file to output, using this first `%s` as the directory and the second `%s` as the unsuffixed name of the grammar.",
           "type": "string",
           "default": "%s/%s.js"
