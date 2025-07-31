@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import * as assert from "node:assert";
 import * as vscode from "vscode";
 import { activate, getDocUri, sleep } from "./helper.js";
 
@@ -12,7 +12,6 @@ suite("Extension Test Suite", () => {
     const docUri = getDocUri("bad.peggy");
     const editor = await activate(docUri);
     const actualDiagnostics = vscode.languages.getDiagnostics(docUri);
-    console.error({ actualDiagnostics });
     assert.ok(actualDiagnostics);
     assert.ok(Array.isArray(actualDiagnostics));
     assert.equal(actualDiagnostics.length, 3);
@@ -52,6 +51,7 @@ suite("Extension Test Suite", () => {
     });
     await vscode.commands.executeCommand("editor.peggyLive");
 
+    // Still needed: check results for correctness.
     await sleep(1000);
   });
 });

@@ -24,7 +24,7 @@ import {
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 import type { SourceNode } from "source-map-generator";
 import { WatchMap } from "./watchMap";
-import { debounce } from "../common/debounce";
+import { debouncePromise } from "../common/debounce";
 
 function getSession(
   ast: peggy.ast.Grammar,
@@ -36,6 +36,7 @@ function getSession(
   ast.code = session as unknown as SourceNode;
 }
 
+const ID = "peggyLanguageServer";
 const AST = new WatchMap<string, any>();
 const WORD_RE = /[^\s{}[\]()`~!@#%^&*+\-=|\\;:'",./<>?]+/g;
 const PASSES: peggy.compiler.Stages = {
@@ -60,6 +61,19 @@ const documents = new TextDocuments(TextDocument);
 // for open, change and close text document events
 documents.listen(connection);
 
+interface PeggySettings {
+  consoleInfo: boolean;
+  markInfo: boolean;
+  debounceMS: number;
+}
+
+const defaultSettings: PeggySettings = {
+  consoleInfo: false,
+  markInfo: true,
+  debounceMS: 200,
+};
+let globalSettings: PeggySettings = defaultSettings;
+
 // After the server has started the client sends an initilize request. The
 // server receives in the passed params the rootPath of the workspace plus the
 // client capabilites.
@@ -77,16 +91,9 @@ connection.onInitialize((): InitializeResult => ({
   },
 }));
 
-interface PeggySettings {
-  consoleInfo: boolean;
-  markInfo: boolean;
-}
-
-const defaultSettings: PeggySettings = {
-  consoleInfo: false,
-  markInfo: true,
-};
-let globalSettings: PeggySettings = defaultSettings;
+connection.onInitialized(async () => {
+  globalSettings = await connection.workspace.getConfiguration(ID);
+});
 
 function peggyLoc_to_vscodeRange(loc: peggy.LocationRange): Range {
   if (!loc) {
@@ -143,7 +150,7 @@ function addProblemDiagnostics(
   }
 }
 
-const validateTextDocument = debounce((doc: TextDocument): void => {
+async function validate(doc: TextDocument): Promise<void> {
   AST.delete(doc.uri); // Cancel any pending and start over.
 
   const diagnostics: Diagnostic[] = [];
@@ -185,13 +192,17 @@ const validateTextDocument = debounce((doc: TextDocument): void => {
   }
 
   // Send the computed diagnostics to VS Code.
-  connection.sendDiagnostics({ uri: doc.uri, diagnostics });
-}, 150);
+  await connection.sendDiagnostics({ uri: doc.uri, diagnostics });
+}
 
-connection.onDidChangeConfiguration(change => {
-  if (change.settings) {
-    globalSettings = change.settings.peggyLanguageServer as PeggySettings;
-  }
+const validateTextDocument = debouncePromise(
+  validate,
+  globalSettings.debounceMS
+);
+
+connection.onDidChangeConfiguration(async () => {
+  globalSettings = await connection.workspace.getConfiguration(ID);
+  validateTextDocument.wait = globalSettings.debounceMS;
 
   // Revalidate all open text documents
   documents.all().forEach(validateTextDocument);
