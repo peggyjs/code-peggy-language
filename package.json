@@ -181,7 +181,7 @@
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
-    "@peggyjs/eslint-config": "6.0.5",
+    "@peggyjs/eslint-config": "6.0.6",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "@types/vscode": "^1.102.0",
@@ -195,12 +195,12 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2",
-    "typescript-eslint": "8.38.0"
+    "typescript-eslint": "8.39.0"
   },
   "dependencies": {
-    "@peggyjs/from-mem": "3.1.0",
-    "peggy": "^5.0.5",
-    "source-map-generator": "2.0.1",
+    "@peggyjs/from-mem": "3.1.1",
+    "peggy": "^5.0.6",
+    "source-map-generator": "2.0.2",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12"
