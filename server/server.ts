@@ -419,7 +419,7 @@ documents.onDidClose(change => {
       uri: change.document.uri,
       diagnostics: [],
     });
-  }, 150);
+  }, globalSettings.debounceMS);
 });
 
 documents.onDidChangeContent(change => {
