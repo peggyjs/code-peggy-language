@@ -17,4 +17,10 @@ export default [
   ...modern,
   ...mocha,
   ...ts,
+  {
+    files: ["**/*.ts"],
+    rules: {
+      "@typescript-eslint/strict-void-return": "off",
+    },
+  },
 ];

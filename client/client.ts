@@ -8,7 +8,7 @@ import {
 } from "vscode-languageclient/node";
 import { ExtensionContext } from "vscode";
 
-let client: LanguageClient = undefined;
+let client: LanguageClient | undefined = undefined;
 
 export function activate(context: ExtensionContext): void {
   // The server is implemented in node
@@ -50,9 +50,8 @@ export function activate(context: ExtensionContext): void {
   client.start();
 }
 
-export function deactivate(): Promise<void> {
+export async function deactivate(): Promise<void> {
   if (client) {
-    return client.stop();
+    await client.stop();
   }
-  return undefined;
 }

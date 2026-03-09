@@ -236,13 +236,13 @@ export function activate(context: ExtensionContext): void {
   });
 
   const initialConfig = workspace.getConfiguration(ID);
-  debounceExecution.wait = initialConfig.get("debounceMS");
-  filePattern = initialConfig.get("filePattern");
+  debounceExecution.wait = initialConfig.get("debounceMS") ?? 200;
+  filePattern = initialConfig.get("filePattern") ?? "%s/%s.js";
   const configChanged = workspace.onDidChangeConfiguration(e => {
     if (e.affectsConfiguration(ID)) {
       const config = workspace.getConfiguration(ID);
-      debounceExecution.wait = config.get("debounceMS");
-      filePattern = config.get("filePattern");
+      debounceExecution.wait = config.get("debounceMS") ?? 200;
+      filePattern = config.get("filePattern") ?? "%s/%s.js";
     }
   });
 
@@ -264,7 +264,7 @@ export function activate(context: ExtensionContext): void {
         /[\p{ID_Start}][\p{ID_Continue}]*/u
       );
 
-      if (word_range !== null) {
+      if (word_range) {
         editor.selection = new Selection(word_range.start, word_range.end);
         const rule_name = editor.document.getText(word_range);
         const grammar_config = await trackGrammar(

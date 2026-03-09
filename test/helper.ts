@@ -13,7 +13,9 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => { setTimeout(resolve, ms); });
 }
 
-export async function activate(docUri: vscode.Uri): Promise<vscode.TextEditor> {
+export async function activate(
+  docUri: vscode.Uri
+): Promise<vscode.TextEditor | undefined> {
   return new Promise((resolve, reject) => {
     const docUriS = docUri.toString();
     let w: vscode.TextEditor | undefined = undefined;

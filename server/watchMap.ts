@@ -6,7 +6,27 @@ export class WatchMap<K, V> extends Map<K, V | null> {
 
   public set(key: K, value: V | null): this {
     super.set(key, value);
+    return this.#notify(key, value);
+  }
 
+  public delete(key: K): boolean {
+    this.#notify(key, null);
+    return super.delete(key);
+  }
+
+  public waitFor(key: K): Promise<V | null> {
+    return new Promise(resolve => {
+      if (this.has(key)) {
+        resolve(this.get(key) as V);
+      } else {
+        this.#watch(key, (_k, v) => {
+          resolve(v);
+        });
+      }
+    });
+  }
+
+  #notify(key: K, value: V | null): this {
     const watchers = this.#pending.get(key);
     if (watchers) {
       this.#pending.delete(key);
@@ -15,29 +35,6 @@ export class WatchMap<K, V> extends Map<K, V | null> {
       }
     }
     return this;
-  }
-
-  public delete(key: K): boolean {
-    const watchers = this.#pending.get(key);
-    if (watchers) {
-      this.#pending.delete(key);
-      for (const w of watchers) {
-        w.call(this, key, null);
-      }
-    }
-    return super.delete(key);
-  }
-
-  public waitFor(key: K): Promise<V | null> {
-    return new Promise(resolve => {
-      if (this.has(key)) {
-        resolve(this.get(key));
-      } else {
-        this.#watch(key, (_k, v) => {
-          resolve(v);
-        });
-      }
-    });
   }
 
   #watch(key: K, cb: Notification<K, V>): this {

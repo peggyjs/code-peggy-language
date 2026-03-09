@@ -28,7 +28,7 @@ import { debouncePromise } from "../common/debounce";
 
 function getSession(
   ast: peggy.ast.Grammar,
-  options: peggy.ParserBuildOptions,
+  _options: peggy.ParserBuildOptions,
   session: peggy.Session
 ): void {
   // Hack to get session information out of the compiler, even
@@ -126,7 +126,7 @@ function addProblemDiagnostics(
         };
         if (diags) {
           for (const diag of diags) {
-            d.relatedInformation.push({
+            d.relatedInformation?.push({
               location: {
                 uri: diag.location.source,
                 range: peggyLoc_to_vscodeRange(diag.location),
@@ -237,15 +237,15 @@ connection.onCompletion(
   async (pos: TextDocumentPositionParams): Promise<CompletionItem[]> => {
     const docAST = await AST.waitFor(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
-      return null;
+      return [];
     }
     const document = documents.get(pos.textDocument.uri);
     if (!document) {
-      return null;
+      return [];
     }
     const word = getWordAtPosition(document, pos.position);
     if (word === "") {
-      return null;
+      return [];
     }
 
     return docAST.rules.filter(
@@ -257,7 +257,7 @@ connection.onCompletion(
 );
 
 connection.onDefinition(
-  async (pos: TextDocumentPositionParams): Promise<LocationLink[]> => {
+  async (pos: TextDocumentPositionParams): Promise<LocationLink[] | null> => {
     const docAST = await AST.waitFor(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -289,7 +289,7 @@ connection.onDefinition(
 );
 
 connection.onReferences(
-  async (pos: TextDocumentPositionParams): Promise<Location[]> => {
+  async (pos: TextDocumentPositionParams): Promise<Location[] | null> => {
     const docAST = await AST.get(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -319,7 +319,7 @@ connection.onReferences(
 );
 
 connection.onRenameRequest(
-  async (pos: RenameParams): Promise<WorkspaceEdit> => {
+  async (pos: RenameParams): Promise<WorkspaceEdit | null> => {
     const docAST = await AST.get(pos.textDocument.uri);
     if (!docAST || (docAST.rules.length === 0)) {
       return null;
@@ -366,7 +366,7 @@ connection.onRenameRequest(
 );
 
 connection.onDocumentSymbol(
-  async (pos: DocumentSymbolParams): Promise<DocumentSymbol[]> => {
+  async (pos: DocumentSymbolParams): Promise<DocumentSymbol[] | null> => {
     const docAST = await AST.waitFor(pos.textDocument.uri);
     if (!docAST) {
       return null;
