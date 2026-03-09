@@ -18,7 +18,7 @@ export function debouncePromise<T extends AnyAsyncFunction>(
   fn: T,
   wait: number
 ): DebouncedWait<T> {
-  let timeout: NodeJS.Timeout = undefined;
+  let timeout: NodeJS.Timeout | undefined = undefined;
   let resolvers: PromiseWithResolvers<Awaited<ReturnType<T>>> | undefined
     = undefined;
 
@@ -32,9 +32,9 @@ export function debouncePromise<T extends AnyAsyncFunction>(
       timeout = undefined;
       try {
         const result = await fn(...args);
-        r.resolve(result);
+        r?.resolve(result);
       } catch (e) {
-        r.reject(e);
+        r?.reject(e);
       }
     }, wrapper.wait);
     if (!resolvers) {

@@ -5,12 +5,14 @@ import { activate, getDocUri, sleep } from "./helper.js";
 suite("Extension Test Suite", () => {
   suiteSetup(async () => {
     const ext = vscode.extensions.getExtension("PeggyJS.peggy-language");
+    assert.ok(ext);
     await ext.activate();
   });
 
   test("Diagnostics", async () => {
     const docUri = getDocUri("bad.peggy");
     const editor = await activate(docUri);
+    assert.ok(editor);
     const actualDiagnostics = vscode.languages.getDiagnostics(docUri);
     assert.ok(actualDiagnostics);
     assert.ok(Array.isArray(actualDiagnostics));
