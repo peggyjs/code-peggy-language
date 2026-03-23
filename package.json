@@ -181,26 +181,26 @@
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
-    "@peggyjs/eslint-config": "6.0.10",
+    "@peggyjs/eslint-config": "^6.0.13",
     "@types/mocha": "^10.0.10",
-    "@types/node": "25.x",
-    "@types/vscode": "^1.109.0",
+    "@types/node": "^25.5.0",
+    "@types/vscode": "^1.110.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "3.7.1",
-    "esbuild": "^0.27.3",
-    "eslint": "^10.0.3",
-    "eslint-plugin-mocha": "11.2.0",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.27.4",
+    "eslint": "^10.1.0",
+    "eslint-plugin-mocha": "^11.2.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.1.3",
-    "superc8": "12.2.4",
+    "superc8": "^12.3.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "8.56.1"
+    "typescript-eslint": "^8.57.2"
   },
   "dependencies": {
-    "@peggyjs/from-mem": "3.1.3",
+    "@peggyjs/from-mem": "^3.1.3",
     "peggy": "^5.1.0",
-    "source-map-generator": "2.0.6",
+    "source-map-generator": "^2.0.6",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12"
@@ -211,7 +211,7 @@
       "serialize-javascript": "7.0.4"
     }
   },
-  "packageManager": "npm@11.11.0",
+  "packageManager": "npm@11.12.0",
   "engines": {
     "vscode": ">=1.111.0"
   }
