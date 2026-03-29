@@ -92,7 +92,7 @@
         "charclass": {
             "begin": "\\[",
             "end": "\\]",
-            "name": "declaration.keyword.peggy",
+            "name": "string.regexp.peggy",
             "patterns": [
                 {
                     "match": "\\\\.",
